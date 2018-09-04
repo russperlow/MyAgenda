@@ -6,6 +6,8 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +20,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,7 +29,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainFragment extends Fragment{
 
@@ -59,6 +64,11 @@ public class MainFragment extends Fragment{
      */
     List<Item> items = new ArrayList<>();
 
+    /**
+     * Hashmap of item types to color tags
+     */
+    Map<String, Integer> colorTags = new HashMap<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -69,6 +79,13 @@ public class MainFragment extends Fragment{
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences((getContext()));
+
+        colorTags.put("Exam", 16711680);
+//        colorTags.put("Project", "#FFFF00");
+//        colorTags.put("Paper", "#FF00FF");
+//        colorTags.put("Exercise", "#00FF00");
+//        colorTags.put("Homework", "#0000FF");
+//        colorTags.put("Quiz", "#00FFFF");
 
         // Add item fab init
         FloatingActionButton addItemFAB = (FloatingActionButton)view.findViewById(R.id.add_item_fab);
@@ -156,6 +173,8 @@ public class MainFragment extends Fragment{
 
             viewHolder.name.setText(item.details);
             viewHolder.date.setText(item.dueDate.toString());
+            viewHolder.tag.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+
 
             // Will allow for user to long click and edit details of item
             view.setOnLongClickListener(new View.OnLongClickListener(){
@@ -172,13 +191,16 @@ public class MainFragment extends Fragment{
 
         class ViewHolder{
             TextView name, date;
+            ImageView tag;
 
             public ViewHolder(View view){
                 name = (TextView)view.findViewById(R.id.item_name);
                 date = (TextView)view.findViewById(R.id.item_date);
+                tag = (ImageView)view.findViewById(R.id.item_tag);
             }
 
         }
+
     }
 
     public static class DatePickerFragment extends DialogFragment {
