@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MyAgenda</string>
+    <string name="action_settings">Settings</string>
+    <string name="item_name">Item Name</string>
+    <string name="item_date">Due Date</string>
+    <string name="item_date_picker">Pick Date</string>
+
+</resources>
