@@ -7,7 +7,7 @@ import java.util.List;
 // General class that will be used for all item types
 public class Item {
     // The type of this list item
-    public ItemType type;
+    public String type;
 
     // The details of this item
     public String details;
@@ -15,7 +15,7 @@ public class Item {
     // The date this item is due
     public Date dueDate;
 
-    public Item(ItemType type, String details){
+    public Item(String type, String details){
         this.type = type;
         this.details = details;
         this.dueDate = new Date(2018, 9, 4);

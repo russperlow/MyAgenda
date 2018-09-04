@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Display calendar for user to choose due date from
     public void showDatePicker(View view){
-        DialogFragment fragment = new DatePickerFragment();
+        DialogFragment fragment = new MainFragment.DatePickerFragment();
         fragment.show(getSupportFragmentManager(), "date picker");
     }
+
 }

@@ -2,15 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <Spinner
+        android:id="@+id/new_item_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/drop_down_array"/>
+
     <EditText
-        android:id="@+id/edit_item_name"
+        android:id="@+id/new_item_name"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:hint="@string/item_name"/>
+
     <Button
-        android:id="@+id/date_picker_button"
+        android:id="@+id/new_item_date_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pick Date"
         android:onClick="showDatePicker"/>
+
 </LinearLayout>
