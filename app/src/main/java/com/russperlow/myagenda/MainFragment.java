@@ -155,12 +155,8 @@ public class MainFragment extends Fragment{
                 // Variables to store the user input that we will add to the list
                 final Spinner typeInput = (Spinner)addItemView.findViewById(R.id.new_item_type);
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
-//                final TextView dateDisplay = (TextView)addItemView.findViewById(R.id.new_item_date_display);
 
-//                dateDisplay.setText(new Date().toString());
-
-//                final DatePicker datePicker = (DatePicker)addItemView.findViewById(R.id.new_item_date_picker);
-
+                // This will be the due date of the item
                 final Date chosenDate = new Date();
 
                 dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -227,7 +223,7 @@ public class MainFragment extends Fragment{
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
 
             if(view == null){
                 view = layoutInflater.inflate(R.layout.item_row, viewGroup, false);
@@ -246,6 +242,28 @@ public class MainFragment extends Fragment{
 
                 @Override
                 public boolean onLongClick(View view) {
+
+                    // Build alert dialog for deletion of long clicked item
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Delete Item")
+                            .setMessage("Are you sure you want to delete this agenda item?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int j) {
+                                    items.remove(i);
+                                    refreshView();
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+
                     return false;
                 }
             });
@@ -279,17 +297,6 @@ public class MainFragment extends Fragment{
 
             return new DatePickerDialog(getActivity(), dateSetListener, year, month, day);
         }
-
-//        private DatePickerDialog.OnDateSetListener dateSetListener =
-//                new DatePickerDialog.OnDateSetListener() {
-//                    @Override
-//                    public void onDateSet(DatePicker view, int i, int i1, int i2) {
-//                        // Confirm date with user via toast display
-//                        Toast.makeText(getActivity(), "selected date is " + view.getYear() +
-//                                " / " + (view.getMonth()+1) +
-//                                " / " + view.getDayOfMonth(), Toast.LENGTH_SHORT).show();
-//                    }
-//                };
     }
 
 
