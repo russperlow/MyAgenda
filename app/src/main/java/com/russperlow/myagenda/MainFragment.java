@@ -26,6 +26,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,6 +40,16 @@ public class MainFragment extends Fragment{
     public static MainFragment newInstance(){
         return new MainFragment();
     }
+
+    /**
+     * The string const for number of agenda items
+     */
+    private final String ITEMS_COUNT = "ITEMS_COUNT";
+
+    /**
+     * The prefix for items we have stored/will store
+     */
+    private final String ITEM_PREFIX = "ITEM_";
 
     /**
      * The list of agenda items to be displayed
@@ -72,6 +84,37 @@ public class MainFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        int numItems = sharedPreferences.getInt(ITEMS_COUNT, 0);
+        Gson gson = new Gson();
+
+        // Loop through the number of items we stored
+        for(int i = 0; i < numItems; i++){
+            String json = sharedPreferences.getString(ITEM_PREFIX + i, "");
+            Item item = gson.fromJson(json, Item.class);
+            items.add(item);
+        }
+
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+
+        // Save all agenda items
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt(ITEMS_COUNT, items.size());
+
+        // Loop through all the agenda items and save them
+        Gson gson = new Gson();
+        for(int i = 0; i < items.size(); i++) {
+            String json = gson.toJson(items.get(i));
+            editor.putString(ITEM_PREFIX + i, json);
+        }
+        editor.commit();
     }
 
     @Override
@@ -80,12 +123,12 @@ public class MainFragment extends Fragment{
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences((getContext()));
 
-        colorTags.put("Exam", 16711680);
-//        colorTags.put("Project", "#FFFF00");
-//        colorTags.put("Paper", "#FF00FF");
-//        colorTags.put("Exercise", "#00FF00");
-//        colorTags.put("Homework", "#0000FF");
-//        colorTags.put("Quiz", "#00FFFF");
+        colorTags.put("Exam", Color.RED);
+        colorTags.put("Project", Color.BLUE);
+        colorTags.put("Paper", Color.GREEN);
+        colorTags.put("Exercise", Color.YELLOW);
+        colorTags.put("Homework", Color.CYAN);
+        colorTags.put("Quiz", Color.MAGENTA);
 
         // Add item fab init
         FloatingActionButton addItemFAB = (FloatingActionButton)view.findViewById(R.id.add_item_fab);
@@ -173,7 +216,7 @@ public class MainFragment extends Fragment{
 
             viewHolder.name.setText(item.details);
             viewHolder.date.setText(item.dueDate.toString());
-            viewHolder.tag.setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+            viewHolder.tag.setColorFilter(colorTags.get("Quiz"), PorterDuff.Mode.SRC_ATOP);
 
 
             // Will allow for user to long click and edit details of item
