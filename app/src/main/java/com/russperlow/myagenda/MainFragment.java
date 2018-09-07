@@ -30,6 +30,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +62,11 @@ public class MainFragment extends Fragment{
      * The adapter for the list view
      */
     MainAdapter adapter;
+
+    /**
+     * Date set listener to save the date when making new item
+     */
+    static DatePickerDialog.OnDateSetListener dateSetListener;
 
     /**
      * Global SharedPrefernces
@@ -148,7 +155,22 @@ public class MainFragment extends Fragment{
                 // Variables to store the user input that we will add to the list
                 final Spinner typeInput = (Spinner)addItemView.findViewById(R.id.new_item_type);
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
+//                final TextView dateDisplay = (TextView)addItemView.findViewById(R.id.new_item_date_display);
+
+//                dateDisplay.setText(new Date().toString());
+
 //                final DatePicker datePicker = (DatePicker)addItemView.findViewById(R.id.new_item_date_picker);
+
+                final Date chosenDate = new Date();
+
+                dateSetListener = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        chosenDate.setYear(datePicker.getYear());
+                        chosenDate.setMonth(datePicker.getMonth());
+                        chosenDate.setDate(datePicker.getDayOfMonth());
+                    }
+                };
 
                 // Alert dialog pop-up when the user wants to add a new item to their agenda
                 alertDialogBuilder
@@ -156,7 +178,7 @@ public class MainFragment extends Fragment{
                         .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString()));
+                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), chosenDate));
                                 refreshView();
                                 Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG);
                             }
@@ -258,16 +280,29 @@ public class MainFragment extends Fragment{
             return new DatePickerDialog(getActivity(), dateSetListener, year, month, day);
         }
 
-        private DatePickerDialog.OnDateSetListener dateSetListener =
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int i, int i1, int i2) {
-                        // Confirm date with user via toast display
-                        Toast.makeText(getActivity(), "selected date is " + view.getYear() +
-                                " / " + (view.getMonth()+1) +
-                                " / " + view.getDayOfMonth(), Toast.LENGTH_SHORT).show();
-                    }
-                };
+//        private DatePickerDialog.OnDateSetListener dateSetListener =
+//                new DatePickerDialog.OnDateSetListener() {
+//                    @Override
+//                    public void onDateSet(DatePicker view, int i, int i1, int i2) {
+//                        // Confirm date with user via toast display
+//                        Toast.makeText(getActivity(), "selected date is " + view.getYear() +
+//                                " / " + (view.getMonth()+1) +
+//                                " / " + view.getDayOfMonth(), Toast.LENGTH_SHORT).show();
+//                    }
+//                };
+    }
+
+
+    /**
+     * Sorts all the items by date
+     */
+    public void sortItems(){
+        Collections.sort(items, new Comparator<Item>() {
+            @Override
+            public int compare(Item item1, Item item2) {
+                return item1.dueDate.compareTo(item2.dueDate);
+            }
+        });
     }
 
     /**
@@ -276,6 +311,7 @@ public class MainFragment extends Fragment{
     public void refreshView(){
         listView.invalidateViews();
 
+        sortItems();
         adapter.notifyDataSetChanged();
         listView = (ListView)getActivity().findViewById(R.id.items_list);
     }

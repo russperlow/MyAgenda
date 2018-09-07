@@ -20,4 +20,10 @@ public class Item {
         this.details = details;
         this.dueDate = new Date(2018, 9, 4);
     }
+
+    public Item(String type, String details, Date dueDate){
+        this.type = type;
+        this.details = details;
+        this.dueDate = dueDate;
+    }
 }
