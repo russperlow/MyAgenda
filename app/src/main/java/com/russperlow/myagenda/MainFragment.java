@@ -234,7 +234,7 @@ public class MainFragment extends Fragment{
 
             viewHolder.name.setText(item.details);
             viewHolder.date.setText(item.dueDate.toString());
-            viewHolder.tag.setColorFilter(colorTags.get("Quiz"), PorterDuff.Mode.SRC_ATOP);
+            viewHolder.tag.setColorFilter(colorTags.get(item.type), PorterDuff.Mode.SRC_ATOP);
 
 
             // Will allow for user to long click and edit details of item
