@@ -5,4 +5,8 @@
     <string name="item_date">Due Date</string>
     <string name="item_date_picker">Pick Date</string>
     <string name="date_time_format">MM/dd/yyyy \'at\' hh:mm a</string>
+    <string name="new_item_title">Add New Agenda Item</string>
+    <string name="new_item_type">Type of Agenda Item:</string>
+    <string name="new_item_pick_date">Set Date</string>
+    <string name="new_item_pick_time">Set Date</string>
 </resources>
