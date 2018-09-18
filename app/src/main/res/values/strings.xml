@@ -4,5 +4,5 @@
     <string name="item_name">Item Name</string>
     <string name="item_date">Due Date</string>
     <string name="item_date_picker">Pick Date</string>
-
+    <string name="date_time_format">MM/dd/yyyy \'at\' hh:mm a</string>
 </resources>

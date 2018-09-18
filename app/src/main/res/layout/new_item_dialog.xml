@@ -16,11 +16,12 @@
         android:textAlignment="center"
         android:hint="@string/item_name"/>
 
-    <!--<TextView-->
-        <!--android:id="@+id/new_item_date_display"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textAlignment="center"/>-->
+    <TextView
+        android:id="@+id/new_item_date_time_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="9/18/2018"/>
 
     <Button
         android:id="@+id/new_item_date_picker"
@@ -29,5 +30,20 @@
         android:text="Pick Date"
         android:textAlignment="center"
         android:onClick="showDatePicker"/>
+
+    <!--<TextView-->
+        <!--android:id="@+id/new_item_time_text"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAlignment="center"-->
+        <!--android:text="11:00:00AM"/>-->
+
+    <Button
+        android:id="@+id/new_item_time_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pick Time"
+        android:textAlignment="center"
+        android:onClick="showTimePicker"/>
 
 </LinearLayout>

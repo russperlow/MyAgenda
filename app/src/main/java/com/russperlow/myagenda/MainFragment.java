@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -24,10 +25,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -67,6 +73,11 @@ public class MainFragment extends Fragment{
      * Date set listener to save the date when making new item
      */
     static DatePickerDialog.OnDateSetListener dateSetListener;
+
+    /**
+     * Time set listener to save the time when making a new item
+     */
+    static TimePickerDialog.OnTimeSetListener timeSetListener;
 
     /**
      * Global SharedPrefernces
@@ -118,7 +129,8 @@ public class MainFragment extends Fragment{
         // Loop through all the agenda items and save them
         Gson gson = new Gson();
         for(int i = 0; i < items.size(); i++) {
-            String json = gson.toJson(items.get(i));
+            Item item = items.get(i);
+            String json = gson.toJson(item);
             editor.putString(ITEM_PREFIX + i, json);
         }
         editor.commit();
@@ -155,16 +167,34 @@ public class MainFragment extends Fragment{
                 // Variables to store the user input that we will add to the list
                 final Spinner typeInput = (Spinner)addItemView.findViewById(R.id.new_item_type);
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
+                final TextView dateTimeDisplay = (TextView)addItemView.findViewById(R.id.new_item_date_time_text);
 
-                // This will be the due date of the item
-                final Date chosenDate = new Date();
+                final Calendar calendar = Calendar.getInstance();
 
+                // Format the date
+                final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_time_format));
+
+                // Display the date and time
+                dateTimeDisplay.setText(simpleDateFormat.format(calendar.getTime()));
+
+                // Set the date when the datepickerdialog is saved
                 dateSetListener = new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                        chosenDate.setYear(datePicker.getYear());
-                        chosenDate.setMonth(datePicker.getMonth());
-                        chosenDate.setDate(datePicker.getDayOfMonth());
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, day);
+                        dateTimeDisplay.setText(simpleDateFormat.format(calendar.getTime()));
+                    }
+                };
+
+                // Set the time when the timepickerdialog is saved
+                timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        calendar.set(Calendar.HOUR_OF_DAY, hour);
+                        calendar.set(Calendar.MINUTE, minute);
+                        dateTimeDisplay.setText(simpleDateFormat.format(calendar.getTime()));
                     }
                 };
 
@@ -174,7 +204,7 @@ public class MainFragment extends Fragment{
                         .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), chosenDate));
+                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar));
                                 refreshView();
                                 Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG);
                             }
@@ -232,9 +262,9 @@ public class MainFragment extends Fragment{
             final ViewHolder viewHolder = new ViewHolder(view);
             final Item item = getItem(i);
 
-            viewHolder.name.setText(item.details);
-            viewHolder.date.setText(item.dueDate.toString());
-            viewHolder.tag.setColorFilter(colorTags.get(item.type), PorterDuff.Mode.SRC_ATOP);
+            viewHolder.name.setText(item.getDetails());
+            viewHolder.date.setText(item.getDueDate());
+            viewHolder.tag.setColorFilter(colorTags.get(item.getType()), PorterDuff.Mode.SRC_ATOP);
 
 
             // Will allow for user to long click and edit details of item
@@ -299,6 +329,17 @@ public class MainFragment extends Fragment{
         }
     }
 
+    public static class TimePickerFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState){
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            return new TimePickerDialog(getActivity(), timeSetListener, hour, minute, false);
+        }
+    }
+
 
     /**
      * Sorts all the items by date
@@ -307,7 +348,7 @@ public class MainFragment extends Fragment{
         Collections.sort(items, new Comparator<Item>() {
             @Override
             public int compare(Item item1, Item item2) {
-                return item1.dueDate.compareTo(item2.dueDate);
+                return item1.getCalendar().compareTo(item2.getCalendar());
             }
         });
     }

@@ -34,4 +34,10 @@ public class MainActivity extends AppCompatActivity {
         fragment.show(getSupportFragmentManager(), "date picker");
     }
 
+    // Display the picker for user to choose the due time from
+    public void showTimePicker(View view){
+        DialogFragment fragment = new MainFragment.TimePickerFragment();
+        fragment.show(getSupportFragmentManager(), "time picker");
+    }
+
 }
