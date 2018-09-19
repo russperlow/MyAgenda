@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activity.MainActivity">
 
-    <item android:id="@+id/help_button"
+    <item android:id="@+id/toolbar_help_button"
         android:title="Help"
         android:icon="@drawable/ic_help_outline_black_24dp"
         app:showAsAction="ifRoom|collapseActionView"/>
 
-    <item android:id="@+id/settings_gear"
+    <item android:id="@+id/toolbar_settings_gear"
         android:title="Settings"
         android:icon="@drawable/ic_settings_black_24dp"
         app:showAsAction="ifRoom|collapseActionView"
