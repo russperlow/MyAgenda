@@ -1,15 +1,18 @@
 package com.russperlow.myagenda;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -27,7 +30,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
+import android.app.PendingIntent;
+import android.content.Intent;
 import com.google.gson.Gson;
 
 import org.w3c.dom.Text;
@@ -99,6 +103,9 @@ public class MainFragment extends Fragment{
      */
     Map<String, Integer> colorTags = new HashMap<>();
 
+
+    AlarmManager alarmManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -115,6 +122,7 @@ public class MainFragment extends Fragment{
             items.add(item);
         }
 
+        alarmManager = (AlarmManager) getActivity().getBaseContext().getSystemService(Context.ALARM_SERVICE);
     }
 
     @Override
@@ -204,8 +212,9 @@ public class MainFragment extends Fragment{
                         .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar));
+                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity()));
                                 refreshView();
+
                                 Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG);
                             }
                         })
