@@ -34,11 +34,20 @@ public class Item {
     // UUID for Notification
     private String uniqueId = "";
 
-    public Item(String type, String details, Calendar dueDate, Activity activity){
+    // Collection of when notifications should be sent off
+    private boolean[] notificationBools;
+
+    public Item(String type, String details, Calendar dueDate, Activity activity, boolean[] notificationBools){
         this.type = type;
         this.details = details;
         this.dueDate = dueDate;
         generateUUID();
+
+        this.notificationBools = new boolean[notificationBools.length];
+        for(int i = 0; i < notificationBools.length; i++){
+            this.notificationBools[i] = notificationBools[i];
+        }
+
         scheduleNotification(activity);
     }
 
@@ -82,15 +91,28 @@ public class Item {
      * @param activity to link this notification to
      */
     public void scheduleNotification(Activity activity){
-        Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, uniqueId);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TYPE, type);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_DETAILS, details);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        long alarmTime = dueDate.getTimeInMillis() - 3600000;
-        AlarmManager alarmManager = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        for(int i = 0; i < notificationBools.length; i++) {
+            Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
+            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, uniqueId + i);
+            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TYPE, type);
+            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_DETAILS, details);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            long alarmTime = dueDate.getTimeInMillis();
+
+            switch (i){
+                case 0:
+                    alarmTime -= 3600000;
+                case 1:
+                    alarmTime -= 86400000;
+                case 2:
+                    alarmTime -= 172800000;
+            }
+
+            AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        }
     }
 
 }

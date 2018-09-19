@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Preference Category">
-        <EditTextPreference
-            android:title="Edit Text Title"
-            android:summary=""
-            android:key="Edit Text Key"
-            android:defaultValue="Edit Text Default"
-            android:inputType="text"/>
+    <PreferenceCategory android:title="@string/pref_category_title_notifications">
+        <SwitchPreference
+            android:key="@string/pref_key_one_hour_notify"
+            android:title="@string/pref_title_one_hour_notify"
+            android:summary="@string/pref_summary_one_hour_notify"
+            android:defaultValue="true"/>
+        <SwitchPreference
+            android:key="@string/pref_key_one_day_notify"
+            android:title="@string/pref_title_one_day_notify"
+            android:summary="@string/pref_summary_one_day_notify"
+            android:defaultValue="true"/>
+        <SwitchPreference
+            android:key="@string/pref_key_two_days_notify"
+            android:title="@string/pref_title_two_days_notify"
+            android:summary="@string/pref_summary_two_days_notify"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_category_title_delete_all">
+        <SwitchPreference
+            android:key="@string/pref_key_delete_all"
+            android:title="@string/pref_title_delete_all"
+            android:summary="@string/pref_summary_delete_all"
+            android:defaultValue="false"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

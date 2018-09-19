@@ -103,8 +103,10 @@ public class MainFragment extends Fragment{
      */
     Map<String, Integer> colorTags = new HashMap<>();
 
-
-    AlarmManager alarmManager;
+    /**
+     * List of all notification switches
+     */
+    boolean[] notificationList = new boolean[3];
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -121,8 +123,6 @@ public class MainFragment extends Fragment{
             Item item = gson.fromJson(json, Item.class);
             items.add(item);
         }
-
-        alarmManager = (AlarmManager) getActivity().getBaseContext().getSystemService(Context.ALARM_SERVICE);
     }
 
     @Override
@@ -142,6 +142,12 @@ public class MainFragment extends Fragment{
             editor.putString(ITEM_PREFIX + i, json);
         }
         editor.commit();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        checkSettings();
     }
 
     @Override
@@ -212,7 +218,7 @@ public class MainFragment extends Fragment{
                         .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity()));
+                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
                                 refreshView();
 
                                 Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG);
@@ -353,7 +359,7 @@ public class MainFragment extends Fragment{
     /**
      * Sorts all the items by date
      */
-    public void sortItems(){
+    protected void sortItems(){
         Collections.sort(items, new Comparator<Item>() {
             @Override
             public int compare(Item item1, Item item2) {
@@ -365,11 +371,29 @@ public class MainFragment extends Fragment{
     /**
      * Refreshes the view to reflect a change made
      */
-    public void refreshView(){
+    protected void refreshView(){
         listView.invalidateViews();
 
         sortItems();
         adapter.notifyDataSetChanged();
         listView = (ListView)getActivity().findViewById(R.id.items_list);
+    }
+
+    /**
+     * Checks the settings every time we reload the screen to see if anything changed
+     */
+    protected void checkSettings(){
+        notificationList[0] = sharedPreferences.getBoolean(getResources().getString(R.string.pref_key_one_hour_notify), true);
+        notificationList[1] = sharedPreferences.getBoolean(getResources().getString(R.string.pref_key_one_day_notify), true);
+        notificationList[2] = sharedPreferences.getBoolean(getResources().getString(R.string.pref_key_two_days_notify), true);
+
+        boolean deleteAll = sharedPreferences.getBoolean(getResources().getString(R.string.pref_key_delete_all), false);
+        if(deleteAll == true){
+            items.clear();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(getResources().getString(R.string.pref_key_delete_all), false);
+            editor.commit();
+            refreshView();
+        }
     }
 }

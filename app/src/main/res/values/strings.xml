@@ -9,4 +9,28 @@
     <string name="new_item_type">Type of Agenda Item:</string>
     <string name="new_item_pick_date">Set Date</string>
     <string name="new_item_pick_time">Set Time</string>
+
+
+    <!--PREFERENCE CATEGORIES-->
+    <string name="pref_category_title_notifications">Notifications</string>
+    <string name="pref_category_title_delete_all">Delete All</string>
+
+    <!--PREFERENCE KEYS-->
+    <string name="pref_key_one_hour_notify">pref_key_one_hour_notify</string>
+    <string name="pref_key_one_day_notify">pref_key_one_day_notify</string>
+    <string name="pref_key_two_days_notify">pref_key_two_days_notify</string>
+    <string name="pref_key_delete_all">pref_key_delete_all</string>
+
+    <!--PREFERENCE TITLES-->
+    <string name="pref_title_one_hour_notify">1 Hour Notification</string>
+    <string name="pref_title_one_day_notify">1 Day Notification</string>
+    <string name="pref_title_two_days_notify">2 Days Notification</string>
+    <string name="pref_title_delete_all">Delete All</string>
+
+    <!--PREFERENCE SUMMARIES-->
+    <string name="pref_summary_one_hour_notify">Send a notification 1 hour before the due time.</string>
+    <string name="pref_summary_one_day_notify">Send a notification 1 day before the due date.</string>
+    <string name="pref_summary_two_days_notify">Send a notification 2 days before the due date.</string>
+    <string name="pref_summary_delete_all">Delete ALL agenda items. This process is not reversible. After all items are delete, this switch will be turned back off.</string>
+
 </resources>
