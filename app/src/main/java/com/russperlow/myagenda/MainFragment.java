@@ -20,6 +20,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -27,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -39,6 +42,7 @@ import org.w3c.dom.Text;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -183,9 +187,12 @@ public class MainFragment extends Fragment{
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
                 final TextView dateTimeDisplay = (TextView)addItemView.findViewById(R.id.new_item_date_time_text);
 
-                final Calendar calendar = Calendar.getInstance();
+                // Grab the class input and populate it from sharedPrefs
+                final Spinner classInput = (Spinner)addItemView.findViewById(R.id.new_item_class);
+                classInput.setAdapter(populateClassesSpinner());
 
-                // Format the date
+                // Create the calendar and formatter
+                final Calendar calendar = Calendar.getInstance();
                 final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_time_format));
 
                 // Display the date and time
@@ -218,7 +225,7 @@ public class MainFragment extends Fragment{
                         .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                items.add(new Item(typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
+                                items.add(new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
                                 refreshView();
 
                                 Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG);
@@ -277,11 +284,10 @@ public class MainFragment extends Fragment{
             final ViewHolder viewHolder = new ViewHolder(view);
             final Item item = getItem(i);
 
-            viewHolder.name.setText(item.getDetails());
+            viewHolder.name.setText(item.getClassStr() + " - " + item.getDetails());
             viewHolder.date.setText(item.getDueDate());
             viewHolder.tag.setColorFilter(colorTags.get(item.getType()), PorterDuff.Mode.SRC_ATOP);
-
-
+            
             // Will allow for user to long click and edit details of item
             view.setOnLongClickListener(new View.OnLongClickListener(){
 
@@ -395,5 +401,20 @@ public class MainFragment extends Fragment{
             editor.commit();
             refreshView();
         }
+    }
+
+    /**
+     * Populates the spinner, when adding a new item, with all the classes option
+     */
+    protected SpinnerAdapter populateClassesSpinner(){
+
+        // Get the classes and split them all by the commas
+        String bigString = sharedPreferences.getString(getResources().getString(R.string.pref_key_classes), getResources().getString(R.string.pref_hint_classes));
+        List<String> classesList = Arrays.asList(bigString.split(","));
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                getContext(), android.R.layout.simple_spinner_item, classesList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
     }
 }

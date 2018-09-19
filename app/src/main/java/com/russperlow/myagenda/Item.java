@@ -22,6 +22,10 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 // General class that will be used for all item types
 public class Item {
+
+    // The class this item belongs to
+    private String classStr;
+
     // The type of this list item
     private String type;
 
@@ -37,7 +41,8 @@ public class Item {
     // Collection of when notifications should be sent off
     private boolean[] notificationBools;
 
-    public Item(String type, String details, Calendar dueDate, Activity activity, boolean[] notificationBools){
+    public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, boolean[] notificationBools){
+        this.classStr = classStr;
         this.type = type;
         this.details = details;
         this.dueDate = dueDate;
@@ -73,6 +78,14 @@ public class Item {
     }
 
     /**
+     * @return the class of this item
+     */
+    public String getClassStr(){
+        return classStr;
+    }
+
+
+    /**
      * @return the type of this item
      */
     public String getType(){
@@ -96,6 +109,7 @@ public class Item {
             Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
             notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, uniqueId + i);
             notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TYPE, type);
+            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_CLASS, classStr);
             notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_DETAILS, details);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

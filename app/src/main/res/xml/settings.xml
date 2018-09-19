@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="@string/pref_category_title_classes">
+        <EditTextPreference
+            android:key="@string/pref_key_classes"
+            android:title="@string/pref_title_classes"
+            android:summary="@string/pref_summary_classes"
+            android:defaultValue="@string/pref_hint_classes"
+            android:inputType="text"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_category_title_notifications">
         <SwitchPreference
             android:key="@string/pref_key_one_hour_notify"

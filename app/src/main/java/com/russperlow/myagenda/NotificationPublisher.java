@@ -18,6 +18,7 @@ public class NotificationPublisher extends BroadcastReceiver {
     public static String NOTIFICATION = "notification";
     public static String NOTIFICATION_TYPE = "TYPE";
     public static String NOTIFICATION_DETAILS = "DETAILS";
+    public static String NOTIFICATION_CLASS = "CLASS";
 
     public void onReceive(Context context, Intent intent) {
 
@@ -27,11 +28,12 @@ public class NotificationPublisher extends BroadcastReceiver {
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
         String title = intent.getStringExtra(NOTIFICATION_TYPE);
         String details = intent.getStringExtra(NOTIFICATION_DETAILS);
+        String classStr = intent.getStringExtra(NOTIFICATION_CLASS);
 
         // Build the basics of the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.ic_alarm_white_24dp);
-        builder.setContentTitle(title);
+        builder.setContentTitle(classStr + " - " + title);
         builder.setContentText(details);
         builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_alarm_black_24dp));
         builder.setTimeoutAfter(5000);
