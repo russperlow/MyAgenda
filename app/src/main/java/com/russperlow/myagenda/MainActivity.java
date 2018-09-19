@@ -1,5 +1,6 @@
 package com.russperlow.myagenda;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -43,10 +44,11 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id){
             case R.id.toolbar_help_button:
-                Toast.makeText(this, "Help Button Clicked", Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(), "Help Button Clicked", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.toolbar_settings_gear:
-                Toast.makeText(this, "Settings Button Clicked", Toast.LENGTH_SHORT);
+                startActivity(new Intent(this, SettingsPreferenceActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                //Toast.makeText(getApplicationContext(), "Settings Button Clicked", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
