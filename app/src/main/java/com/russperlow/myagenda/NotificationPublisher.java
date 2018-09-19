@@ -34,6 +34,7 @@ public class NotificationPublisher extends BroadcastReceiver {
         builder.setContentTitle(title);
         builder.setContentText(details);
         builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_alarm_black_24dp));
+        builder.setTimeoutAfter(5000);
 
         // Create the intent and pending intent
         Intent intent1 = new Intent(context, getClass());
@@ -43,11 +44,10 @@ public class NotificationPublisher extends BroadcastReceiver {
         builder.setContentIntent(pendingIntent);
         builder.setAutoCancel(true);
         builder.setFullScreenIntent(pendingIntent, false);
-        builder.setTimeoutAfter(10000);
 
         // Create the manager and notify
         NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        builder.setLights(0xFFFF00FF, 1000, 1000);
         manager.notify(id, builder.build());
-
     }
 }
