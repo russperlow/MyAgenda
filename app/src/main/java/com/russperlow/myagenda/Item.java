@@ -100,6 +100,18 @@ public class Item {
     }
 
     /**
+     * If an item is edited, we need to update out fields
+     *
+     * @param newItem the item we are sent with all the new information
+     */
+    public void onEdit(Item newItem){
+        this.classStr = newItem.getClassStr();
+        this.type = newItem.getType();
+        this.details = newItem.getDetails();
+        this.dueDate = newItem.getCalendar();
+    }
+
+    /**
      * Schedules 1 or more notifications based on the due date
      * @param activity to link this notification to
      */

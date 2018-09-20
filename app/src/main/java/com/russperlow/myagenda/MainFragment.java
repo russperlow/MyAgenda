@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -222,16 +223,16 @@ public class MainFragment extends Fragment{
                 // Alert dialog pop-up when the user wants to add a new item to their agenda
                 alertDialogBuilder
                         .setCancelable(false)
-                        .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.SAVE, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 items.add(new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
                                 refreshView();
 
-                                Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG);
+//                                Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG).show();
                             }
                         })
-                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.CANCEL, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.cancel();
@@ -282,11 +283,11 @@ public class MainFragment extends Fragment{
             }
 
             final ViewHolder viewHolder = new ViewHolder(view);
-            final Item item = getItem(i);
+            final Item thisItem = getItem(i);
 
-            viewHolder.name.setText(item.getClassStr() + " - " + item.getDetails());
-            viewHolder.date.setText(item.getDueDate());
-            viewHolder.tag.setColorFilter(colorTags.get(item.getType()), PorterDuff.Mode.SRC_ATOP);
+            viewHolder.name.setText(thisItem.getClassStr() + " - " + thisItem.getDetails());
+            viewHolder.date.setText(thisItem.getDueDate());
+            viewHolder.tag.setColorFilter(colorTags.get(thisItem.getType()), PorterDuff.Mode.SRC_ATOP);
             
             // Will allow for user to long click and edit details of item
             view.setOnLongClickListener(new View.OnLongClickListener(){
@@ -294,27 +295,112 @@ public class MainFragment extends Fragment{
                 @Override
                 public boolean onLongClick(View view) {
 
-                    // Build alert dialog for deletion of long clicked item
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Delete Item")
-                            .setMessage("Are you sure you want to delete this agenda item?")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    View editItemView = inflater.inflate(R.layout.new_item_dialog, null);
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+
+                    // Set the new item dialog to the builder
+                    alertDialogBuilder.setView(editItemView);
+
+                    // Variables to store the user input that we will add to the list
+                    final Spinner typeInput = (Spinner)editItemView.findViewById(R.id.new_item_type);
+                    final EditText nameInput = (EditText)editItemView.findViewById(R.id.new_item_name);
+                    final TextView dateTimeDisplay = (TextView)editItemView.findViewById(R.id.new_item_date_time_text);
+                    final Button deleteItemButton = (Button)editItemView.findViewById(R.id.new_item_delete);
+
+                    // Show the delete button on edit
+                    deleteItemButton.setVisibility(View.VISIBLE);
+
+                    // Grab the class input and populate it from sharedPrefs
+                    final Spinner classInput = (Spinner)editItemView.findViewById(R.id.new_item_class);
+                    classInput.setAdapter(populateClassesSpinner());
+
+                    // Create the formatter
+                    final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_time_format));
+
+                    // Set all of the information to match the item we are editing
+                    final Calendar calendar = thisItem.getCalendar();
+                    List<String> arrayList = Arrays.asList(getResources().getStringArray(R.array.drop_down_array));
+                    typeInput.setSelection(arrayList.indexOf(thisItem.getType()));
+                    classInput.setSelection(getClassList().indexOf(thisItem.getClassStr()));
+                    nameInput.setText(thisItem.getDetails());
+                    dateTimeDisplay.setText(thisItem.getDueDate());
+
+                    // Display the date and time
+                    dateTimeDisplay.setText(simpleDateFormat.format(calendar.getTime()));
+
+                    // Set the date when the datepickerdialog is saved
+                    dateSetListener = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                            calendar.set(Calendar.YEAR, year);
+                            calendar.set(Calendar.MONTH, month);
+                            calendar.set(Calendar.DAY_OF_MONTH, day);
+                            dateTimeDisplay.setText(simpleDateFormat.format(calendar.getTime()));
+                        }
+                    };
+
+                    // Set the time when the timepickerdialog is saved
+                    timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                            calendar.set(Calendar.HOUR_OF_DAY, hour);
+                            calendar.set(Calendar.MINUTE, minute);
+                            dateTimeDisplay.setText(simpleDateFormat.format(calendar.getTime()));
+                        }
+                    };
+
+                    // Alert dialog pop-up when the user wants to add a new item to their agenda
+                    alertDialogBuilder
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.SAVE, new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialogInterface, int j) {
-                                    items.remove(i);
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Item newItem = new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList);
+                                    thisItem.onEdit(newItem);
                                     refreshView();
+//                                    Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG).show();
                                 }
                             })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.CANCEL, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     dialogInterface.cancel();
                                 }
                             });
 
-                    AlertDialog alertDialog = builder.create();
+                    final AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
 
+                    // Delete button onClick listener, deletes this object from the list
+                    deleteItemButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            AlertDialog.Builder confirmDeleteBuilder = new AlertDialog.Builder(getActivity());
+                            confirmDeleteBuilder
+                                    .setCancelable(false)
+                                    .setMessage(R.string.new_item_confirm_delete_message)
+                                    .setPositiveButton(R.string.YES, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int j) {
+                                            items.remove(i);
+                                            refreshView();
+                                            alertDialog.cancel();
+                                        }
+                                    })
+                                    .setNegativeButton(R.string.NO, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                        }
+                                    });
+                            AlertDialog confirmDeleteDialog = confirmDeleteBuilder.create();
+                            confirmDeleteDialog.show();
+
+                        }
+                    });
                     return false;
                 }
             });
@@ -408,13 +494,17 @@ public class MainFragment extends Fragment{
      */
     protected SpinnerAdapter populateClassesSpinner(){
 
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                getContext(), android.R.layout.simple_spinner_item, getClassList());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
+    }
+
+    protected List<String> getClassList(){
         // Get the classes and split them all by the commas
         String bigString = sharedPreferences.getString(getResources().getString(R.string.pref_key_classes), getResources().getString(R.string.pref_hint_classes));
         List<String> classesList = Arrays.asList(bigString.split(","));
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getContext(), android.R.layout.simple_spinner_item, classesList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        return adapter;
+        return classesList;
     }
 }

@@ -106,4 +106,14 @@
             android:background="@color/colorAccent"/>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/new_item_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/new_item_delete"
+        android:textAlignment="center"
+        android:background="@color/red"
+        android:textColor="@color/black"
+        android:visibility="gone"/>
+
 </LinearLayout>
