@@ -23,13 +23,14 @@
 
     <!--PREFERENCE CATEGORIES-->
     <string name="pref_category_title_notifications">Notifications</string>
-    <string name="pref_category_title_delete_all">Delete All</string>
+    <string name="pref_category_title_delete">Deletion</string>
     <string name="pref_category_title_classes">Classes</string>
 
     <!--PREFERENCE KEYS-->
     <string name="pref_key_one_hour_notify">pref_key_one_hour_notify</string>
     <string name="pref_key_one_day_notify">pref_key_one_day_notify</string>
     <string name="pref_key_two_days_notify">pref_key_two_days_notify</string>
+    <string name="pref_key_delete_after_due">pref_key_delete_after_due</string>
     <string name="pref_key_delete_all">pref_key_delete_all</string>
     <string name="pref_key_classes">pref_key_classes</string>
 
@@ -37,6 +38,7 @@
     <string name="pref_title_one_hour_notify">1 Hour Notification</string>
     <string name="pref_title_one_day_notify">1 Day Notification</string>
     <string name="pref_title_two_days_notify">2 Days Notification</string>
+    <string name="pref_title_delete_after_due">Delete After Due</string>
     <string name="pref_title_delete_all">Delete All</string>
     <string name="pref_title_classes">Classes</string>
 
@@ -44,6 +46,7 @@
     <string name="pref_summary_one_hour_notify">Send a notification 1 hour before the due time.</string>
     <string name="pref_summary_one_day_notify">Send a notification 1 day before the due date.</string>
     <string name="pref_summary_two_days_notify">Send a notification 2 days before the due date.</string>
+    <string name="pref_summary_delete_after_due">Delete items after their due date.</string>
     <string name="pref_summary_delete_all">Delete ALL agenda items. This process is not reversible. After all items are delete, this switch will be turned back off.</string>
     <string name="pref_summary_classes">Please enter your classes separated by a comma.</string>
 

@@ -120,13 +120,16 @@ public class MainFragment extends Fragment{
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         int numItems = sharedPreferences.getInt(ITEMS_COUNT, 0);
+        boolean deleteAfterDue = sharedPreferences.getBoolean(getString(R.string.pref_key_delete_after_due), true);
+        Calendar nowCalendar = Calendar.getInstance();
         Gson gson = new Gson();
 
         // Loop through the number of items we stored
         for(int i = 0; i < numItems; i++){
             String json = sharedPreferences.getString(ITEM_PREFIX + i, "");
             Item item = gson.fromJson(json, Item.class);
-            items.add(item);
+            if(!deleteAfterDue || item.getCalendar().compareTo(nowCalendar) >= 0)
+                items.add(item);
         }
     }
 

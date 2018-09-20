@@ -28,7 +28,13 @@
             android:defaultValue="true"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_category_title_delete_all">
+    <PreferenceCategory android:title="@string/pref_category_title_delete">
+        <SwitchPreference
+            android:key="@string/pref_key_delete_after_due"
+            android:title="@string/pref_title_delete_after_due"
+            android:summary="@string/pref_summary_delete_after_due"
+            android:defaultValue="true"/>
+
         <SwitchPreference
             android:key="@string/pref_key_delete_all"
             android:title="@string/pref_title_delete_all"
