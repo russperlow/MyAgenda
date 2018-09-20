@@ -10,10 +10,11 @@
             android:inputType="text"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Item Types">
+    <PreferenceCategory android:title="@string/pref_category_title_item_types">
         <com.russperlow.myagenda.DynamicListPreference
-            android:title="Title"
-            android:key="DynamicKey"/>
+            android:title="@string/pref_title_item_types"
+            android:key="@string/pref_key_item_types"
+            android:summary="@string/pref_summary_item_types"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_category_title_notifications">

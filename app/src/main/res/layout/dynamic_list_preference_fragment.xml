@@ -9,11 +9,12 @@
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/dynamic_list_preference_btn"
+        android:id="@+id/dynamic_list_preference_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="BUTTON"
-        android:background="@color/colorAccent"/>
+        android:text="@string/add_item_type"
+        android:background="@color/colorAccent"
+        android:padding="5dp"/>
 
 </LinearLayout>
