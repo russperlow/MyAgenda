@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MyAgenda</string>
     <string name="action_settings">Settings</string>
-
+    
     <!--Strings for dialog buttons-->
     <string name="YES">Yes</string>
     <string name="NO">No</string>

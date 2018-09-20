@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -101,7 +102,7 @@ public class MainFragment extends Fragment{
     /**
      * List of items on the user's agenda
      */
-    List<Item> items = new ArrayList<>();
+    List<Item> allItems = new ArrayList<>();
 
     /**
      * Hashmap of item types to color tags
@@ -129,8 +130,9 @@ public class MainFragment extends Fragment{
             String json = sharedPreferences.getString(ITEM_PREFIX + i, "");
             Item item = gson.fromJson(json, Item.class);
             if(!deleteAfterDue || item.getCalendar().compareTo(nowCalendar) >= 0)
-                items.add(item);
+                allItems.add(item);
         }
+
     }
 
     @Override
@@ -140,12 +142,12 @@ public class MainFragment extends Fragment{
         // Save all agenda items
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putInt(ITEMS_COUNT, items.size());
+        editor.putInt(ITEMS_COUNT, allItems.size());
 
         // Loop through all the agenda items and save them
         Gson gson = new Gson();
-        for(int i = 0; i < items.size(); i++) {
-            Item item = items.get(i);
+        for(int i = 0; i < allItems.size(); i++) {
+            Item item = allItems.get(i);
             String json = gson.toJson(item);
             editor.putString(ITEM_PREFIX + i, json);
         }
@@ -229,7 +231,7 @@ public class MainFragment extends Fragment{
                         .setPositiveButton(R.string.SAVE, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                items.add(new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
+                                allItems.add(new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
                                 refreshView();
 
 //                                Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG).show();
@@ -249,8 +251,35 @@ public class MainFragment extends Fragment{
 
         layoutInflater = getActivity().getLayoutInflater();
         listView = (ListView)view.findViewById(R.id.items_list);
-        adapter = new MainAdapter(items);
+        adapter = new MainAdapter(allItems);
         listView.setAdapter(adapter);
+
+        // Spinner for sorting agenda items
+        Spinner sortSpinner = (Spinner)view.findViewById(R.id.sort_spinner);
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+                String type = parent.getItemAtPosition(position).toString();
+                if(type.equals(getResources().getStringArray(R.array.drop_down_array_all)[0])) {
+                    adapter.items = allItems;
+                }else{
+                    List<Item> filteredByType = new ArrayList<>();
+                    for(Item item : allItems){
+                        if(item.getType().equals(type)){
+                            filteredByType.add(item);
+                        }
+                    }
+                    adapter.items = filteredByType;
+                }
+                refreshView();
+                Toast.makeText(getContext(), "Selected", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         return view;
     }
@@ -455,7 +484,7 @@ public class MainFragment extends Fragment{
      * Sorts all the items by date
      */
     protected void sortItems(){
-        Collections.sort(items, new Comparator<Item>() {
+        Collections.sort(allItems, new Comparator<Item>() {
             @Override
             public int compare(Item item1, Item item2) {
                 return item1.getCalendar().compareTo(item2.getCalendar());
@@ -484,7 +513,7 @@ public class MainFragment extends Fragment{
 
         boolean deleteAll = sharedPreferences.getBoolean(getResources().getString(R.string.pref_key_delete_all), false);
         if(deleteAll == true){
-            items.clear();
+            allItems.clear();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(getResources().getString(R.string.pref_key_delete_all), false);
             editor.commit();
