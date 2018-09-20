@@ -1,7 +1,16 @@
 <resources>
     <string name="app_name">MyAgenda</string>
     <string name="action_settings">Settings</string>
-    
+
+    <!--Strings for item types-->
+    <string name="item_type_all">All</string>
+    <string name="item_type_exam">Exam</string>
+    <string name="item_type_project">Project</string>
+    <string name="item_type_quiz">Quiz</string>
+    <string name="item_type_homework">Homework</string>
+    <string name="item_type_paper">Paper</string>
+    <string name="item_type_exercise">Exercise</string>
+
     <!--Strings for dialog buttons-->
     <string name="YES">Yes</string>
     <string name="NO">No</string>

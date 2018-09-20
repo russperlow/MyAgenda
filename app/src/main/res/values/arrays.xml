@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="drop_down_array">
-        <item>Exam</item>
-        <item>Project</item>
-        <item>Quiz</item>
-        <item>Homework</item>
-        <item>Paper</item>
-        <item>Exercise</item>
+        <item>@string/item_type_exam</item>
+        <item>@string/item_type_project</item>
+        <item>@string/item_type_quiz</item>
+        <item>@string/item_type_homework</item>
+        <item>@string/item_type_paper</item>
+        <item>@string/item_type_exercise</item>
     </string-array>
     <string-array name="drop_down_array_all">
-        <item>All</item>
-        <item>Exam</item>
-        <item>Project</item>
-        <item>Quiz</item>
-        <item>Homework</item>
-        <item>Paper</item>
-        <item>Exercise</item>
+        <item>@string/item_type_all</item>
+        <item>@string/item_type_exam</item>
+        <item>@string/item_type_project</item>
+        <item>@string/item_type_quiz</item>
+        <item>@string/item_type_homework</item>
+        <item>@string/item_type_paper</item>
+        <item>@string/item_type_exercise</item>
     </string-array>
 </resources>
