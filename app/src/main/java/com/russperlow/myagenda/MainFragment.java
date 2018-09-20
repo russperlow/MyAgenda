@@ -114,6 +114,8 @@ public class MainFragment extends Fragment{
      */
     boolean[] notificationList = new boolean[3];
 
+    Spinner sortSpinner;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -158,6 +160,7 @@ public class MainFragment extends Fragment{
     public void onResume(){
         super.onResume();
         checkSettings();
+        refreshView();
     }
 
     @Override
@@ -190,6 +193,8 @@ public class MainFragment extends Fragment{
 
                 // Variables to store the user input that we will add to the list
                 final Spinner typeInput = (Spinner)addItemView.findViewById(R.id.new_item_type);
+                typeInput.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, false));
+
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
                 final TextView dateTimeDisplay = (TextView)addItemView.findViewById(R.id.new_item_date_time_text);
 
@@ -255,7 +260,8 @@ public class MainFragment extends Fragment{
         listView.setAdapter(adapter);
 
         // Spinner for sorting agenda items
-        Spinner sortSpinner = (Spinner)view.findViewById(R.id.sort_spinner);
+        sortSpinner = (Spinner)view.findViewById(R.id.sort_spinner);
+        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
@@ -501,6 +507,8 @@ public class MainFragment extends Fragment{
         sortItems();
         adapter.notifyDataSetChanged();
         listView = (ListView)getActivity().findViewById(R.id.items_list);
+
+        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
     }
 
     /**
@@ -538,5 +546,35 @@ public class MainFragment extends Fragment{
         String bigString = sharedPreferences.getString(getResources().getString(R.string.pref_key_classes), getResources().getString(R.string.pref_hint_classes));
         List<String> classesList = Arrays.asList(bigString.split(","));
         return classesList;
+    }
+
+    /**
+     * Populates the spinner, when adding a new item, with all the classes option
+     */
+    protected SpinnerAdapter populateTypeSpinner(int countKey, int prefix, int defaultArray, boolean includeAll){
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                getContext(), android.R.layout.simple_spinner_item, getPrefArrayAsList(countKey, prefix, defaultArray, includeAll));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
+    }
+
+    protected List<String> getPrefArrayAsList(int countKey, int prefix, int defaultArray, boolean includeAll){
+
+        int count = sharedPreferences.getInt(getString(countKey), 0);
+        List<String> list = new ArrayList<>();
+
+        if(includeAll)
+            list.add(getString(R.string.item_type_all));
+
+        if(count > 0) {
+            for (int i = 0; i < count; i++) {
+                list.add(sharedPreferences.getString(getString(prefix) + i, ""));
+            }
+        }
+        else{
+            list = Arrays.asList(getResources().getStringArray(defaultArray));
+        }
+        return list;
     }
 }
