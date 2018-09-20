@@ -11,9 +11,9 @@
         <Spinner
             android:id="@+id/sort_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:textAlignment="center"
-            android:entries="@array/drop_down_array"
+            android:entries="@array/drop_down_array_all"
             android:background="#D3D3D3"/>
     </LinearLayout>
 

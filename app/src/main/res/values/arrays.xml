@@ -8,4 +8,13 @@
         <item>Paper</item>
         <item>Exercise</item>
     </string-array>
+    <string-array name="drop_down_array_all">
+        <item>All</item>
+        <item>Exam</item>
+        <item>Project</item>
+        <item>Quiz</item>
+        <item>Homework</item>
+        <item>Paper</item>
+        <item>Exercise</item>
+    </string-array>
 </resources>
