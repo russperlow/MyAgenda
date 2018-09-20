@@ -179,7 +179,7 @@ public class MainFragment extends Fragment{
 
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 View addItemView = inflater.inflate(R.layout.new_item_dialog, null);
 
@@ -272,7 +272,7 @@ public class MainFragment extends Fragment{
                     adapter.items = filteredByType;
                 }
                 refreshView();
-                Toast.makeText(getContext(), "Selected", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Selected", Toast.LENGTH_SHORT).show();
             }
 
             @Override

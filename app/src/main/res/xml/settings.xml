@@ -10,6 +10,12 @@
             android:inputType="text"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Item Types">
+        <com.russperlow.myagenda.DynamicListPreference
+            android:title="Title"
+            android:key="DynamicKey"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_category_title_notifications">
         <SwitchPreference
             android:key="@string/pref_key_one_hour_notify"
