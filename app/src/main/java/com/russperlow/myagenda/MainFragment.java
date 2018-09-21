@@ -193,7 +193,7 @@ public class MainFragment extends Fragment{
 
                 // Variables to store the user input that we will add to the list
                 final Spinner typeInput = (Spinner)addItemView.findViewById(R.id.new_item_type);
-                typeInput.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, false));
+//                typeInput.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, false));
 
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
                 final TextView dateTimeDisplay = (TextView)addItemView.findViewById(R.id.new_item_date_time_text);
@@ -261,7 +261,7 @@ public class MainFragment extends Fragment{
 
         // Spinner for sorting agenda items
         sortSpinner = (Spinner)view.findViewById(R.id.sort_spinner);
-        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
+//        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
@@ -508,7 +508,7 @@ public class MainFragment extends Fragment{
         adapter.notifyDataSetChanged();
         listView = (ListView)getActivity().findViewById(R.id.items_list);
 
-        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
+//        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
     }
 
     /**
