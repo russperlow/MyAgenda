@@ -118,22 +118,26 @@ public class Item {
     public void scheduleNotification(Activity activity){
 
         for(int i = 0; i < notificationBools.length; i++) {
+            int thisId = NotificationID.nextValue();
             Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
-            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, uniqueId + i);
+            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, thisId);
             notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TYPE, type);
             notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_CLASS, classStr);
             notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_DETAILS, details);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, thisId, notificationIntent, 0);
 
             long alarmTime = dueDate.getTimeInMillis();
 
             switch (i){
                 case 0:
                     alarmTime -= 3600000;
+                    break;
                 case 1:
                     alarmTime -= 86400000;
+                    break;
                 case 2:
                     alarmTime -= 172800000;
+                    break;
             }
 
             AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
