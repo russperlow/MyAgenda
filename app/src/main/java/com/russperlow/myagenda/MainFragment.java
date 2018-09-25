@@ -114,7 +114,15 @@ public class MainFragment extends Fragment{
      */
     boolean[] notificationList = new boolean[3];
 
+    /**
+     * The spinner we use for sorting elements
+     */
     Spinner sortSpinner;
+
+    /**
+     * The variable used for checking the delete element after due setting
+     */
+    boolean deleteAfterDue;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -123,7 +131,7 @@ public class MainFragment extends Fragment{
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         int numItems = sharedPreferences.getInt(ITEMS_COUNT, 0);
-        boolean deleteAfterDue = sharedPreferences.getBoolean(getString(R.string.pref_key_delete_after_due), true);
+        deleteAfterDue = sharedPreferences.getBoolean(getString(R.string.pref_key_delete_after_due), true);
         Calendar nowCalendar = Calendar.getInstance();
         Gson gson = new Gson();
 
@@ -314,6 +322,16 @@ public class MainFragment extends Fragment{
         }
 
         @Override
+        public int getViewTypeCount() {
+            return getCount();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        @Override
         public View getView(final int i, View view, ViewGroup viewGroup) {
 
             if(view == null){
@@ -322,6 +340,10 @@ public class MainFragment extends Fragment{
 
             final ViewHolder viewHolder = new ViewHolder(view);
             final Item thisItem = getItem(i);
+
+            if(!deleteAfterDue && thisItem.getCalendar().compareTo(Calendar.getInstance()) < 0){
+                view.setBackgroundColor(Color.GRAY);
+            }
 
             viewHolder.name.setText(thisItem.getClassStr() + " - " + thisItem.getDetails());
             viewHolder.date.setText(thisItem.getDueDate());
