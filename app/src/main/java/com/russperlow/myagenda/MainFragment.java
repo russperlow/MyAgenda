@@ -53,7 +53,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainFragment extends Fragment{
+public class MainFragment extends Fragment
+    implements ItemManager.RetrieveItemsListner {
 
     public static MainFragment newInstance(){
         return new MainFragment();
@@ -128,20 +129,24 @@ public class MainFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        List<Item> getItems = ItemManager.getItems(this, getActivity());
 
-        int numItems = sharedPreferences.getInt(ITEMS_COUNT, 0);
-        deleteAfterDue = sharedPreferences.getBoolean(getString(R.string.pref_key_delete_after_due), true);
-        Calendar nowCalendar = Calendar.getInstance();
-        Gson gson = new Gson();
+//        allItems.add(new Item("Public Relations", "Exam", "String", Calendar.getInstance(), getActivity(), notificationList));
 
-        // Loop through the number of items we stored
-        for(int i = 0; i < numItems; i++){
-            String json = sharedPreferences.getString(ITEM_PREFIX + i, "");
-            Item item = gson.fromJson(json, Item.class);
-            if(!deleteAfterDue || item.getCalendar().compareTo(nowCalendar) >= 0)
-                allItems.add(item);
-        }
+//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//
+//        int numItems = sharedPreferences.getInt(ITEMS_COUNT, 0);
+//        deleteAfterDue = sharedPreferences.getBoolean(getString(R.string.pref_key_delete_after_due), true);
+//        Calendar nowCalendar = Calendar.getInstance();
+//        Gson gson = new Gson();
+//
+//        // Loop through the number of items we stored
+//        for(int i = 0; i < numItems; i++){
+//            String json = sharedPreferences.getString(ITEM_PREFIX + i, "");
+//            Item item = gson.fromJson(json, Item.class);
+//            if(!deleteAfterDue || item.getCalendar().compareTo(nowCalendar) >= 0)
+//                allItems.add(item);
+//        }
 
     }
 
@@ -174,6 +179,8 @@ public class MainFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.main_fragment, container, false);
+
+        allItems = ItemManager.getItems(this, getActivity());
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences((getContext()));
 
@@ -247,7 +254,6 @@ public class MainFragment extends Fragment{
                                 allItems.add(new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
                                 refreshView();
 
-//                                Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG).show();
                             }
                         })
                         .setNegativeButton(R.string.CANCEL, new DialogInterface.OnClickListener() {
@@ -286,7 +292,6 @@ public class MainFragment extends Fragment{
                     adapter.items = filteredByType;
                 }
                 refreshView();
-//                Toast.makeText(getContext(), "Selected", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -296,6 +301,19 @@ public class MainFragment extends Fragment{
         });
 
         return view;
+    }
+
+    @Override
+    public void retrieveItems(final List<Item> retrievedItems) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                allItems = retrievedItems;
+                adapter.items = allItems;
+                sortItems();
+                refreshView();
+            }
+        });
     }
 
     class MainAdapter extends BaseAdapter{
@@ -323,7 +341,7 @@ public class MainFragment extends Fragment{
 
         @Override
         public int getViewTypeCount() {
-            return getCount();
+            return 1;//getCount();
         }
 
         @Override
@@ -420,7 +438,6 @@ public class MainFragment extends Fragment{
                                     Item newItem = new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList);
                                     thisItem.onEdit(newItem);
                                     refreshView();
-//                                    Toast.makeText(getContext(), "Item added & refreshed", Toast.LENGTH_LONG).show();
                                 }
                             })
                             .setNegativeButton(R.string.CANCEL, new DialogInterface.OnClickListener() {

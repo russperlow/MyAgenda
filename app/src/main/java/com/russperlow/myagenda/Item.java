@@ -56,6 +56,13 @@ public class Item {
         scheduleNotification(activity);
     }
 
+    public Item(String classStr, String type, String details, Calendar dueDate){
+        this.classStr = classStr;
+        this.type = type;
+        this.details = details;
+        this.dueDate = dueDate;
+    }
+
     /**
      * Generates a UUID for the notification
      */
