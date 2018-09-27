@@ -107,8 +107,8 @@ public class ItemManager {
 
                 // Get the timestamp parse to calendar
                 long timestamp = (long)item.get("timestamp");
-                Calendar dueDate = Calendar.getInstance(TimeZone.getTimeZone("EST"));
-                dueDate.setTimeInMillis(timestamp * 1000);
+                Calendar dueDate = Calendar.getInstance();
+                dueDate.setTimeInMillis(timestamp);
 
                 databaseItems.add(new Item(className, type, details, dueDate));
             }
