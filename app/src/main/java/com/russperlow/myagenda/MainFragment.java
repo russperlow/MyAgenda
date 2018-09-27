@@ -438,6 +438,7 @@ public class MainFragment extends Fragment
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Item newItem = new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList);
                                     thisItem.onEdit(newItem);
+                                    ItemManager.updateDatabase(allItems);
                                     refreshView();
                                 }
                             })
