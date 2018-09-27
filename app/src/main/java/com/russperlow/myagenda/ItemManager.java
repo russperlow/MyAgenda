@@ -61,7 +61,7 @@ public class ItemManager {
         return allItems;
     }
 
-    public static void putItemInDatabase(List<Item> items){
+    public static void updateDatabase(List<Item> items){
         Map<String, Object> children = new HashMap<>();
 
         List<Object> objects = new ArrayList<>();

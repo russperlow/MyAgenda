@@ -252,7 +252,7 @@ public class MainFragment extends Fragment
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 allItems.add(new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList));
-                                ItemManager.putItemInDatabase(allItems);
+                                ItemManager.updateDatabase(allItems);
                                 refreshView();
 
                             }
@@ -464,6 +464,7 @@ public class MainFragment extends Fragment
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int j) {
                                             items.remove(i);
+                                            ItemManager.updateDatabase(allItems);
                                             refreshView();
                                             alertDialog.cancel();
                                         }
