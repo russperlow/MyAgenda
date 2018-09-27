@@ -38,11 +38,11 @@ public class ItemManager {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference reference = database.getReference();
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 allItems.addAll(createItemsFromDatabase((Map<String, Object>)dataSnapshot.getValue(), activity));
-                _listener.retrieveItems(allItems);
+                _listener.retrieveItems(createItemsFromDatabase((Map<String, Object>)dataSnapshot.getValue(), activity));
             }
 
             @Override
