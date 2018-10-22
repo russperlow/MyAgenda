@@ -19,6 +19,9 @@ public class NotificationPublisher extends BroadcastReceiver {
     public static String NOTIFICATION_TYPE = "TYPE";
     public static String NOTIFICATION_DETAILS = "DETAILS";
     public static String NOTIFICATION_CLASS = "CLASS";
+    public static int FIRST_NOTIFICATION_TIME = 172800000; // Two days (first to go off)
+    public static int SECOND_NOTIFICATION_TIME = 86400000; // One day (middle)
+    public static int THIRD_NOTIFICATION_TIME = 3600000; // One hour (last)
 
     public void onReceive(Context context, Intent intent) {
 

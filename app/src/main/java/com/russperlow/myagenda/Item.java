@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,9 @@ public class Item {
     // Collection of when notifications should be sent off
     private boolean[] notificationBools;
 
+    // The ids of all notifications
+    private int[] notificationIds;
+
     public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, boolean[] notificationBools){
         this.classStr = classStr;
         this.type = type;
@@ -49,11 +53,14 @@ public class Item {
         generateUUID();
 
         this.notificationBools = new boolean[notificationBools.length];
+        this.notificationIds = new int[notificationBools.length];
+
         for(int i = 0; i < notificationBools.length; i++){
             this.notificationBools[i] = notificationBools[i];
+            this.notificationIds[i] = -1;
         }
 
-        scheduleNotification(activity);
+        scheduleAllNotifications(activity);
     }
 
     public Item(String classStr, String type, String details, Calendar dueDate){
@@ -119,37 +126,62 @@ public class Item {
     }
 
     /**
-     * Schedules 1 or more notifications based on the due date
-     * @param activity to link this notification to
+     * Schedules all notifications by default
+     *
+     * @param activity To get the system service from
      */
-    public void scheduleNotification(Activity activity){
-
-        for(int i = 0; i < notificationBools.length; i++) {
+    private void scheduleAllNotifications(Activity activity){
+        for(int i = 0; i < notificationBools.length; i++){
+            // Create and set an id for all notifications, true or false, in case changes in settings are made
             int thisId = NotificationID.nextValue();
-            Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
-            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, thisId);
-            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TYPE, type);
-            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_CLASS, classStr);
-            notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_DETAILS, details);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, thisId, notificationIntent, 0);
+            notificationIds[i] = thisId;
 
-            long alarmTime = dueDate.getTimeInMillis();
-
-            switch (i){
-                case 0:
-                    alarmTime -= 3600000; // 1 Hour before
-                    break;
-                case 1:
-                    alarmTime -= 86400000; // 1 Day before
-                    break;
-                case 2:
-                    alarmTime -= 172800000; // 2 Day's before
-                    break;
+            // If this notification is set to true, we make a notification for it
+            if(notificationBools[i]){
+                createNotification(activity, thisId, getAlarmTime(i));
             }
-
-            AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         }
     }
 
+    /**
+     * Creates a notification with the given information
+     *
+     * @param activity Activity to get system service from
+     * @param requestId Unique ID of the notification
+     * @param alarmTime Time to publish this notification at
+     */
+    private void createNotification(Activity activity, int requestId, int alarmTime){
+        // Build the notifications intent and pass it into a pending intent
+        Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, requestId);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_TYPE, type);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_CLASS, classStr);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_DETAILS, details);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, requestId, notificationIntent, 0);
+
+        // Make the alarm using the pending intent
+        AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+    }
+
+    /**
+     * Returns the time we would like the notification to go off
+     *
+     * @param index used to determine the time
+     *
+     * @return the time the notification should go off
+     */
+    private int getAlarmTime(int index){
+        // Using the due date set the notifications according to the switch statement
+        long alarmTime = dueDate.getTimeInMillis();
+        switch (index){
+            case 0:
+                return (int)(alarmTime - NotificationPublisher.THIRD_NOTIFICATION_TIME); // 1 Hour before
+            case 1:
+                return (int)(alarmTime - NotificationPublisher.SECOND_NOTIFICATION_TIME); // 1 Day before
+            case 2:
+                return (int)(alarmTime - NotificationPublisher.FIRST_NOTIFICATION_TIME); // 2 Days before
+        }
+        return (int)alarmTime;
+    }
 }
