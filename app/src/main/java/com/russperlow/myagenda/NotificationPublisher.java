@@ -28,7 +28,13 @@ public class NotificationPublisher extends BroadcastReceiver {
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Get the id, title and details from the intent
-        int id = intent.getIntExtra(NOTIFICATION_ID, 0);
+        int id = intent.getIntExtra(NOTIFICATION_ID, -1);
+
+        // If the id is 0 then it isn't an item, or something went wrong. Don't display
+        if(id == -1)
+            return;
+
+        // Get the title, details and class from the intent
         String title = intent.getStringExtra(NOTIFICATION_TYPE);
         String details = intent.getStringExtra(NOTIFICATION_DETAILS);
         String classStr = intent.getStringExtra(NOTIFICATION_CLASS);

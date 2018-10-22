@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +47,15 @@ public class Item {
     // The ids of all notifications
     private int[] notificationIds;
 
+    /**
+     * Constructor for creating a perminent
+     * @param classStr
+     * @param type
+     * @param details
+     * @param dueDate
+     * @param activity
+     * @param notificationBools
+     */
     public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, boolean[] notificationBools){
         this.classStr = classStr;
         this.type = type;
@@ -63,11 +74,17 @@ public class Item {
         scheduleAllNotifications(activity);
     }
 
-    public Item(String classStr, String type, String details, Calendar dueDate){
+    public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, int[] notificationIds){
         this.classStr = classStr;
         this.type = type;
         this.details = details;
         this.dueDate = dueDate;
+        this.notificationIds = notificationIds;
+
+        notificationBools = new boolean[3];
+        notificationBools[0] = notificationBools[1] = notificationBools[2] = true;
+
+        editAllNotifications(activity);
     }
 
     /**
@@ -114,15 +131,33 @@ public class Item {
     }
 
     /**
+     * @return the notification ids of this item
+     */
+    public int[] getNotificationIds() {
+        return notificationIds;
+    }
+
+    /**
      * If an item is edited, we need to update out fields
      *
-     * @param newItem the item we are sent with all the new information
+     * @param classStr the class string
+     * @param type the type this item is
+     * @param details the details of this item
+     * @param dueDate the calendar this is due at
+     * @param updateNotifications whether or not we should update notifications
+     * @param activity used if we need to update notifications
      */
-    public void onEdit(Item newItem){
-        this.classStr = newItem.getClassStr();
-        this.type = newItem.getType();
-        this.details = newItem.getDetails();
-        this.dueDate = newItem.getCalendar();
+    public void onEdit(String classStr, String type, String details, Calendar dueDate, boolean updateNotifications, Activity activity){
+        this.classStr = classStr;
+        this.type = type;
+        this.details = details;
+        this.dueDate = dueDate;
+
+        // If a notification setting or the due date was changed, we update notifications
+        if(updateNotifications){
+            Log.i("ITEM", "On Edit ~ Update");
+            editAllNotifications(activity);
+        }
     }
 
     /**
@@ -141,6 +176,52 @@ public class Item {
                 createNotification(activity, thisId, getAlarmTime(i));
             }
         }
+        Log.i("ITEM", "Schedule all notifications");
+    }
+
+    /**
+     * Will edit all notifications if a notification setting or the due date was changed
+     *
+     * @param activity Activity to get the Alarm Service from
+     */
+    private void editAllNotifications(Activity activity){
+        for(int i = 0; i < notificationIds.length; i++){
+
+            // If this notification should go, recreate it with the same id to override the old one
+            if(notificationBools[i]){
+                editNotification(activity, notificationIds[i], getAlarmTime(i));
+            }
+            else{
+                cancelNotification(activity, notificationIds[i]);
+            }
+        }
+        Log.i("ITEM", "Edit all notifications");
+    }
+
+    /**
+     * Will "edit" the notification by cancelling and recreating it
+     *
+     * @param activity Activity to get the Alarm Service from
+     * @param requestId Unique ID of the notification
+     * @param alarmTime Time we want the notification to go off
+     */
+    private void editNotification(Activity activity, int requestId, long alarmTime){
+        cancelNotification(activity, requestId);
+        createNotification(activity, requestId, alarmTime);
+    }
+
+    /**
+     * Cancels the notification with the given id
+     *
+     * @param activity Activity to get system service from
+     * @param requestId Unique ID of the notification
+     */
+    private void cancelNotification(Activity activity, int requestId){
+        AlarmManager alarmManager = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(activity, NotificationPublisher.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, requestId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
+        Log.i("ITEM", "Cancel Notification");
     }
 
     /**
@@ -150,7 +231,7 @@ public class Item {
      * @param requestId Unique ID of the notification
      * @param alarmTime Time to publish this notification at
      */
-    private void createNotification(Activity activity, int requestId, int alarmTime){
+    private void createNotification(Activity activity, int requestId, long alarmTime){
         // Build the notifications intent and pass it into a pending intent
         Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, requestId);
@@ -162,6 +243,7 @@ public class Item {
         // Make the alarm using the pending intent
         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        Log.i("ITEM", "Create Notification");
     }
 
     /**
@@ -171,17 +253,17 @@ public class Item {
      *
      * @return the time the notification should go off
      */
-    private int getAlarmTime(int index){
+    private long getAlarmTime(int index){
         // Using the due date set the notifications according to the switch statement
         long alarmTime = dueDate.getTimeInMillis();
         switch (index){
             case 0:
-                return (int)(alarmTime - NotificationPublisher.THIRD_NOTIFICATION_TIME); // 1 Hour before
+                return (alarmTime - NotificationPublisher.THIRD_NOTIFICATION_TIME); // 1 Hour before
             case 1:
-                return (int)(alarmTime - NotificationPublisher.SECOND_NOTIFICATION_TIME); // 1 Day before
+                return (alarmTime - NotificationPublisher.SECOND_NOTIFICATION_TIME); // 1 Day before
             case 2:
-                return (int)(alarmTime - NotificationPublisher.FIRST_NOTIFICATION_TIME); // 2 Days before
+                return (alarmTime - NotificationPublisher.FIRST_NOTIFICATION_TIME); // 2 Days before
         }
-        return (int)alarmTime;
+        return alarmTime;
     }
 }

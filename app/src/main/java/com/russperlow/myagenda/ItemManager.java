@@ -3,6 +3,7 @@ package com.russperlow.myagenda;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.common.util.ArrayUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -11,6 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -110,7 +112,13 @@ public class ItemManager {
                 Calendar dueDate = Calendar.getInstance();
                 dueDate.setTimeInMillis(timestamp);
 
-                databaseItems.add(new Item(className, type, details, dueDate));
+                List<Object> notificationArray = (ArrayList)item.get("notificationIds");
+                int[] notificationIds = new int[notificationArray.size()];
+                for(int i = 0; i < notificationArray.size(); i++){
+                    notificationIds[i] = (int)((long)notificationArray.get(i));
+                }
+
+                databaseItems.add(new Item(className, type, details, dueDate, activity, notificationIds));
             }
         }
 
@@ -118,23 +126,28 @@ public class ItemManager {
     }
 
     private static SaveItemState convertItem(Item item){
-        return new SaveItemState(item.getClassStr(), item.getDetails(), item.getType(), item.getCalendar().getTimeInMillis());
+        return new SaveItemState(item.getClassStr(), item.getDetails(), item.getType(), item.getCalendar().getTimeInMillis(), item.getNotificationIds());
     }
 
     private static class SaveItemState{
 
         public String classname, details, type;
         public long timestamp;
+        public List<Integer> notificationIds = new ArrayList<>();
 
         public SaveItemState(){
 
         }
 
-        public SaveItemState(String classname, String details, String type, long timestamp){
+        public SaveItemState(String classname, String details, String type, long timestamp, int[] notificationIds){
             this.classname = classname;
             this.details = details;
             this.type = type;
             this.timestamp = timestamp;
+
+            for(int i = 0; i < notificationIds.length; i++){
+                this.notificationIds.add(notificationIds[i]);
+            }
         }
     }
 

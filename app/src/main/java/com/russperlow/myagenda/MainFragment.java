@@ -436,8 +436,13 @@ public class MainFragment extends Fragment
                             .setPositiveButton(R.string.SAVE, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    Item newItem = new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList);
-                                    thisItem.onEdit(newItem);
+//                                    Item newItem = new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList);
+                                    thisItem.onEdit(classInput.getSelectedItem().toString(),
+                                            typeInput.getSelectedItem().toString(),
+                                            nameInput.getText().toString(),
+                                            calendar,
+                                            true,
+                                            getActivity());
                                     ItemManager.updateDatabase(allItems);
                                     refreshView();
                                 }
