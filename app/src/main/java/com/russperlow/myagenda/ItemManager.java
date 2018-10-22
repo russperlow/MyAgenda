@@ -118,7 +118,7 @@ public class ItemManager {
                     notificationIds[i] = (int)((long)notificationArray.get(i));
                 }
 
-                databaseItems.add(new Item(className, type, details, dueDate, activity, notificationIds));
+                databaseItems.add(new Item(className, type, details, dueDate, notificationIds));
             }
         }
 

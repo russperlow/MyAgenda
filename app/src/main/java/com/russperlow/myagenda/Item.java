@@ -74,7 +74,20 @@ public class Item {
         scheduleAllNotifications(activity);
     }
 
-    public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, int[] notificationIds){
+//    public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, int[] notificationIds){
+//        this.classStr = classStr;
+//        this.type = type;
+//        this.details = details;
+//        this.dueDate = dueDate;
+//        this.notificationIds = notificationIds;
+//
+//        notificationBools = new boolean[3];
+//        notificationBools[0] = notificationBools[1] = notificationBools[2] = true;
+//
+//        editAllNotifications(activity);
+//    }
+
+    public Item(String classStr, String type, String details, Calendar dueDate, int[] notificationIds){
         this.classStr = classStr;
         this.type = type;
         this.details = details;
@@ -83,8 +96,6 @@ public class Item {
 
         notificationBools = new boolean[3];
         notificationBools[0] = notificationBools[1] = notificationBools[2] = true;
-
-        editAllNotifications(activity);
     }
 
     /**
@@ -219,7 +230,7 @@ public class Item {
     private void cancelNotification(Activity activity, int requestId){
         AlarmManager alarmManager = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(activity, NotificationPublisher.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, requestId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, requestId, intent, 0);
         alarmManager.cancel(pendingIntent);
         Log.i("ITEM", "Cancel Notification");
     }
