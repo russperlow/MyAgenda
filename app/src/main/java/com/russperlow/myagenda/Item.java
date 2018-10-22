@@ -137,13 +137,13 @@ public class Item {
 
             switch (i){
                 case 0:
-                    alarmTime -= 3600000;
+                    alarmTime -= 3600000; // 1 Hour before
                     break;
                 case 1:
-                    alarmTime -= 86400000;
+                    alarmTime -= 86400000; // 1 Day before
                     break;
                 case 2:
-                    alarmTime -= 172800000;
+                    alarmTime -= 172800000; // 2 Day's before
                     break;
             }
 

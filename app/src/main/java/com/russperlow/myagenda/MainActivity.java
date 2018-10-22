@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putInt(NotificationID.NOTIFICATION_COUTNTER, NotificationID.nextValue());
+        editor.commit();
     }
 
     // Display calendar for user to choose due date from
