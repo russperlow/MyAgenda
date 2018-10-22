@@ -128,26 +128,6 @@ public class MainFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
-//        List<Item> getItems = ItemManager.getItems(this, getActivity());
-
-//        allItems.add(new Item("Public Relations", "Exam", "String", Calendar.getInstance(), getActivity(), notificationList));
-
-//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-//
-//        int numItems = sharedPreferences.getInt(ITEMS_COUNT, 0);
-//        deleteAfterDue = sharedPreferences.getBoolean(getString(R.string.pref_key_delete_after_due), true);
-//        Calendar nowCalendar = Calendar.getInstance();
-//        Gson gson = new Gson();
-//
-//        // Loop through the number of items we stored
-//        for(int i = 0; i < numItems; i++){
-//            String json = sharedPreferences.getString(ITEM_PREFIX + i, "");
-//            Item item = gson.fromJson(json, Item.class);
-//            if(!deleteAfterDue || item.getCalendar().compareTo(nowCalendar) >= 0)
-//                allItems.add(item);
-//        }
-
     }
 
     @Override
@@ -576,6 +556,7 @@ public class MainFragment extends Fragment
         boolean deleteAll = sharedPreferences.getBoolean(getResources().getString(R.string.pref_key_delete_all), false);
         if(deleteAll == true){
             allItems.clear();
+            ItemManager.updateDatabase(allItems);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(getResources().getString(R.string.pref_key_delete_all), false);
             editor.commit();

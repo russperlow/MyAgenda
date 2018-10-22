@@ -99,6 +99,10 @@ public class ItemManager {
 
             // Get all items
             List<Object> itemList = (ArrayList)thisUser.get(DATABASE_ITEMS);
+
+            if(itemList == null)
+                continue;
+
             for(Object object : itemList){
                 Map item = (Map)object;
 
