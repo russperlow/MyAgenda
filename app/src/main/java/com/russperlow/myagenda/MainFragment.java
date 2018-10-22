@@ -221,6 +221,10 @@ public class MainFragment extends Fragment
                 final Calendar calendar = Calendar.getInstance();
                 final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_time_format));
 
+                // Default the time to 11:59pm since most assignments are due then
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+
                 // Display the date and time
                 dateTimeDisplay.setText(simpleDateFormat.format(calendar.getTime()));
 
