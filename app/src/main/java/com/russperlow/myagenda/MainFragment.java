@@ -360,8 +360,11 @@ public class MainFragment extends Fragment
             final ViewHolder viewHolder = new ViewHolder(view);
             final Item thisItem = getItem(i);
 
-            if(!deleteAfterDue && thisItem.getCalendar().compareTo(Calendar.getInstance()) < 0){
+            if(!deleteAfterDue && thisItem.hasPassed()){
                 view.setBackgroundColor(Color.GRAY);
+            }
+            else{
+                view.setBackgroundColor(Color.WHITE);
             }
 
             viewHolder.name.setText(thisItem.getClassStr() + " - " + thisItem.getDetails());

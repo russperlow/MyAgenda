@@ -148,6 +148,10 @@ public class Item {
         return notificationIds;
     }
 
+    public boolean hasPassed(){
+        return dueDate.compareTo(Calendar.getInstance()) < 0;
+    }
+
     /**
      * If an item is edited, we need to update out fields
      *
