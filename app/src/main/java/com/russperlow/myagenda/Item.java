@@ -185,7 +185,6 @@ public class Item {
 
         // If a notification setting or the due date was changed, we update notifications
         if(updateNotifications){
-            Log.i("ITEM", "On Edit ~ Update");
             editAllNotifications(activity);
         }
         ItemManager.updateItem(this);
@@ -207,7 +206,6 @@ public class Item {
                 createNotification(activity, thisId, getAlarmTime(i));
             }
         }
-        Log.i("ITEM", "Schedule all notifications");
     }
 
     /**
@@ -226,7 +224,6 @@ public class Item {
                 cancelNotification(activity, notificationIds[i]);
             }
         }
-        Log.i("ITEM", "Edit all notifications");
     }
 
     /**
@@ -252,7 +249,6 @@ public class Item {
         Intent intent = new Intent(activity, NotificationPublisher.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, requestId, intent, 0);
         alarmManager.cancel(pendingIntent);
-        Log.i("ITEM", "Cancel Notification");
     }
 
     /**
@@ -274,7 +270,6 @@ public class Item {
         // Make the alarm using the pending intent
         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-        Log.i("ITEM", "Create Notification");
     }
 
     /**

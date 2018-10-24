@@ -178,7 +178,6 @@ public class MainFragment extends Fragment
 
             @Override
             public void onClick(View view) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 View addItemView = inflater.inflate(R.layout.new_item_dialog, null);
 
@@ -189,7 +188,6 @@ public class MainFragment extends Fragment
 
                 // Variables to store the user input that we will add to the list
                 final Spinner typeInput = (Spinner)addItemView.findViewById(R.id.new_item_type);
-//                typeInput.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, false));
                 typeInput.setAdapter(populateTypeSpinner());
 
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
@@ -262,7 +260,6 @@ public class MainFragment extends Fragment
 
         // Spinner for sorting agenda items
         sortSpinner = (Spinner)view.findViewById(R.id.sort_spinner);
-//        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
@@ -445,7 +442,6 @@ public class MainFragment extends Fragment
                             .setPositiveButton(R.string.SAVE, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-//                                    Item newItem = new Item(classInput.getSelectedItem().toString(), typeInput.getSelectedItem().toString(), nameInput.getText().toString(), calendar, getActivity(), notificationList);
                                     thisItem.onEdit(classInput.getSelectedItem().toString(),
                                             typeInput.getSelectedItem().toString(),
                                             nameInput.getText().toString(),
@@ -564,7 +560,6 @@ public class MainFragment extends Fragment
         adapter.notifyDataSetChanged();
         listView = (ListView)getActivity().findViewById(R.id.items_list);
 
-//        sortSpinner.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, true));
     }
 
     /**

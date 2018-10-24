@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.toolbar_settings_gear:
                 startActivity(new Intent(this, SettingsPreferenceActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                //Toast.makeText(getApplicationContext(), "Settings Button Clicked", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
