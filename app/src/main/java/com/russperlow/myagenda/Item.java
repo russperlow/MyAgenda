@@ -48,13 +48,14 @@ public class Item {
     private int[] notificationIds;
 
     /**
-     * Constructor for creating a perminent
-     * @param classStr
-     * @param type
-     * @param details
-     * @param dueDate
-     * @param activity
-     * @param notificationBools
+     * Constructor for creating an item locally
+     *
+     * @param classStr name of the class
+     * @param type name of the item type
+     * @param details description of the item
+     * @param dueDate time and day this item is due
+     * @param activity for creating notifications
+     * @param notificationBools list of which notifications we should create
      */
     public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, boolean[] notificationBools){
         this.classStr = classStr;
@@ -74,25 +75,39 @@ public class Item {
         scheduleAllNotifications(activity);
     }
 
-//    public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, int[] notificationIds){
-//        this.classStr = classStr;
-//        this.type = type;
-//        this.details = details;
-//        this.dueDate = dueDate;
-//        this.notificationIds = notificationIds;
-//
-//        notificationBools = new boolean[3];
-//        notificationBools[0] = notificationBools[1] = notificationBools[2] = true;
-//
-//        editAllNotifications(activity);
-//    }
-
-    public Item(String classStr, String type, String details, Calendar dueDate, int[] notificationIds){
+    /**
+     * CONSTRUCTOR for creating items from the firebase database
+     *
+     * @param classStr name of the class
+     * @param type name of the item type
+     * @param details description of the item
+     * @param dueDate time and day this item is due
+     * @param activity for creating notifications
+     * @param notificationIds list of the ids
+     */
+    public Item(String classStr, String type, String details, Calendar dueDate, Activity activity, int[] notificationIds){
         this.classStr = classStr;
         this.type = type;
         this.details = details;
         this.dueDate = dueDate;
-        this.notificationIds = notificationIds;
+
+        this.notificationIds = new int[notificationIds.length];
+        boolean updatedNotifications = false;
+        for(int i = 0; i < notificationIds.length; i++){
+            if(notificationIds[i] == -1){
+                int id = NotificationID.nextValue();
+                createNotification(activity, id, getAlarmTime(i));
+                this.notificationIds[i] = id;
+                updatedNotifications = true;
+            }
+            else{
+                this.notificationIds[i] = notificationIds[i];
+            }
+        }
+
+        if(updatedNotifications){
+            ItemManager.updateItem(this);
+        }
 
         notificationBools = new boolean[3];
         notificationBools[0] = notificationBools[1] = notificationBools[2] = true;
@@ -173,6 +188,7 @@ public class Item {
             Log.i("ITEM", "On Edit ~ Update");
             editAllNotifications(activity);
         }
+        ItemManager.updateItem(this);
     }
 
     /**

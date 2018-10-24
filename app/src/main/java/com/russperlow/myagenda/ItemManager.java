@@ -76,6 +76,13 @@ public class ItemManager {
         reference.child(DATABASE_USERS).child(DATABASE_MY_USER).updateChildren(children);
     }
 
+    public static void updateItem(Item item){
+        Map<String, Object> child = new HashMap<>();
+        child.put(Integer.toString(allItems.size()), convertItem(item));
+
+        reference.child(DATABASE_USERS).child(DATABASE_MY_USER).child(DATABASE_ITEMS).updateChildren(child);
+    }
+
     /**
      * Creates agenda items from the Firebase
      *
@@ -122,7 +129,7 @@ public class ItemManager {
                     notificationIds[i] = (int)((long)notificationArray.get(i));
                 }
 
-                databaseItems.add(new Item(className, type, details, dueDate, notificationIds));
+                databaseItems.add(new Item(className, type, details, dueDate, activity, notificationIds));
             }
         }
 
