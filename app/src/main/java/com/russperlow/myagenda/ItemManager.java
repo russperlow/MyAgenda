@@ -3,56 +3,69 @@ package com.russperlow.myagenda;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
-import com.google.android.gms.common.util.ArrayUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.security.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class ItemManager {
 
-    interface RetrieveItemsListner{
+    interface RetrieveItemsListener {
         void retrieveItems(List<Item> allItems);
     }
 
-    private static final List<Item> allItems = new ArrayList<>();
-    private static final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private static final DatabaseReference reference = database.getReference();
+    interface RetrieveClassesListener{
+        void retrieveClasses(List<String> allClasses);
+    }
 
+    // Database URL strings
     private static final String DATABASE_ITEMS = "Items";
     private static final String DATABASE_CLASS_TYPES = "ClassTypes";
     private static final String DATABASE_ITEM_TYPES = "ItemTypes";
     private static final String DATABASE_USERS = "Users";
     private static final String DATABASE_MY_USER = "Russ";
 
-    public static List<Item> getItems(final RetrieveItemsListner listner, final Activity activity){
+    private static final List<Item> allItems = new ArrayList<>();
+
+    // Firebase Database references
+    private static final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private static final DatabaseReference reference = database.getReference();
+    private static DatabaseReference allUsersRef;
+    private static DatabaseReference myUserRef;
+    private static DatabaseReference myItemsRef;
+    private static DatabaseReference myClassTypesRef;
+    private static DatabaseReference myItemTypesRef;
+
+    public static void initDatabaseRefs(final RetrieveItemsListener listener, final Activity activity){
+        allUsersRef = reference.child(DATABASE_USERS);
+        myUserRef = allUsersRef.child(DATABASE_MY_USER);
+        myItemsRef = myUserRef.child(DATABASE_ITEMS);
+        myClassTypesRef = myUserRef.child(DATABASE_CLASS_TYPES);
+        myItemTypesRef = myUserRef.child(DATABASE_ITEM_TYPES);
 
         // Listener for getting items from the database
-        final RetrieveItemsListner _listener = new RetrieveItemsListner() {
+        final RetrieveItemsListener _listener = new RetrieveItemsListener() {
             @Override
             public void retrieveItems(List<Item> _allItems){
                 List<Item> copy = new ArrayList<>();
                 copy.addAll(_allItems);
                 allItems.clear();
                 allItems.addAll(_allItems);
-                listner.retrieveItems(copy);
+                listener.retrieveItems(copy);
             }
         };
 
-        reference.addValueEventListener(new ValueEventListener() {
+        myItemsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                _listener.retrieveItems(createItemsFromDatabase((Map<String, Object>)dataSnapshot.getValue(), activity));
+                _listener.retrieveItems(createItemsFromDatabase((List<Object>)dataSnapshot.getValue(), activity));
             }
 
             @Override
@@ -61,8 +74,8 @@ public class ItemManager {
             }
         });
 
-        return allItems;
     }
+
 
     public static void updateDatabase(List<Item> items){
         Map<String, Object> children = new HashMap<>();
@@ -77,6 +90,7 @@ public class ItemManager {
         reference.child(DATABASE_USERS).child(DATABASE_MY_USER).updateChildren(children);
     }
 
+
     public static void updateItem(Item item){
         Map<String, Object> child = new HashMap<>();
         child.put(Integer.toString(allItems.size()), convertItem(item));
@@ -85,56 +99,47 @@ public class ItemManager {
     }
 
     /**
-     * Creates agenda items from the Firebase
+     * Create our agenda items from the database
      *
-     * @param items
-     * @param activity
+     * @param items Item objects as stored in Firebase
+     * @param activity Activity used for creating notifications
      *
-     * @return
+     * @return all items stored in Firebase
      */
-    private static List<Item> createItemsFromDatabase(Map<String, Object> items, final Activity activity){
+    private static List<Item> createItemsFromDatabase(List<Object> items, final Activity activity){
 
         // List for all items we pull from the database
         List<Item> databaseItems = new ArrayList<>();
 
-        for(Map.Entry<String, Object> entry : items.entrySet()){
-            Map<String, Object> allUsers = (Map<String, Object>)entry.getValue(); // Get the users map of KVPair Name - Items List
+        // Loop through the given objects and parse them over to items
+        for(Object object : items){
 
-            Map<String, Object> thisUser = (Map<String, Object>)(allUsers.get(DATABASE_MY_USER));
-
-            List<String> itemTypes = (ArrayList)thisUser.get(DATABASE_ITEM_TYPES);
-            List<String> classTypes = (ArrayList)thisUser.get(DATABASE_CLASS_TYPES);
-
-            // Get all items
-            List<Object> itemList = (ArrayList)thisUser.get(DATABASE_ITEMS);
-
-            if(itemList == null)
+            // Used for cases when there is a gap in items (ie. 1, 2, 4, 5)
+            if(object == null)
                 continue;
 
-            for(Object object : itemList){
-                if(object == null)
-                    continue;
+            // Get this specific item as a map
+            Map item = (Map)object;
 
-                Map item = (Map)object;
+            // Get all string information
+            String className = (String)item.get("classname");
+            String details = (String)item.get("details");
+            String type = (String)item.get("type");
 
-                // Get all string information
-                String className = (String)item.get("classname");
-                String details = (String)item.get("details");
-                String type = (String)item.get("type");
+            // Get the timestamp parse to calendar
+            long timestamp = (long)item.get("timestamp");
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.setTimeInMillis(timestamp);
 
-                // Get the timestamp parse to calendar
-                long timestamp = (long)item.get("timestamp");
-                Calendar dueDate = Calendar.getInstance();
-                dueDate.setTimeInMillis(timestamp);
-
-                List<Object> notificationArray = (ArrayList)item.get("notificationIds");
-                int[] notificationIds = new int[notificationArray.size()];
-                for(int i = 0; i < notificationArray.size(); i++){
-                    notificationIds[i] = (int)((long)notificationArray.get(i));
-                }
-
-                databaseItems.add(new Item(className, type, details, dueDate, activity, notificationIds));
+            // Get the notification ids
+            List<Object> notificationArray = (ArrayList)item.get("notificationIds");
+            int[] notificationIds = new int[notificationArray.size()];
+            for(int i = 0; i < notificationArray.size(); i++) {
+                notificationIds[i] = (int) ((long) notificationArray.get(i));
             }
+
+            // Add this to the list we will return
+            databaseItems.add(new Item(className, type, details, dueDate, activity, notificationIds));
         }
 
         return databaseItems;

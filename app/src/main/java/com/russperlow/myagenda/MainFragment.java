@@ -1,18 +1,14 @@
 package com.russperlow.myagenda;
 
-import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -20,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -33,28 +28,22 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
-import android.app.PendingIntent;
-import android.content.Intent;
+
 import com.google.gson.Gson;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MainFragment extends Fragment
-    implements ItemManager.RetrieveItemsListner {
+    implements  ItemManager.RetrieveItemsListener,
+                ItemManager.RetrieveClassesListener {
 
     public static MainFragment newInstance(){
         return new MainFragment();
@@ -125,6 +114,8 @@ public class MainFragment extends Fragment
      */
     boolean deleteAfterDue;
 
+    private List<String> classes = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -160,7 +151,8 @@ public class MainFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
-        allItems = ItemManager.getItems(this, getActivity());
+        // Init all references to the database (classes, item types, items)
+        ItemManager.initDatabaseRefs(this, getActivity());
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences((getContext()));
 
@@ -297,6 +289,16 @@ public class MainFragment extends Fragment
                 adapter.items = allItems;
                 sortItems();
                 refreshView();
+            }
+        });
+    }
+
+    @Override
+    public void retrieveClasses(List<String> allClasses) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
             }
         });
     }
