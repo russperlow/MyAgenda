@@ -112,6 +112,9 @@ public class ItemManager {
                 continue;
 
             for(Object object : itemList){
+                if(object == null)
+                    continue;
+
                 Map item = (Map)object;
 
                 // Get all string information
