@@ -114,7 +114,10 @@ public class MainFragment extends Fragment
      */
     boolean deleteAfterDue;
 
-    private List<String> classes = new ArrayList<>();
+    /**
+     * The class names pulled from firebase
+     */
+    List<String> classes = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -152,7 +155,7 @@ public class MainFragment extends Fragment
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
         // Init all references to the database (classes, item types, items)
-        ItemManager.initDatabaseRefs(this, getActivity());
+        ItemManager.initDatabaseRefs(this, this, getActivity());
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences((getContext()));
 
@@ -294,11 +297,11 @@ public class MainFragment extends Fragment
     }
 
     @Override
-    public void retrieveClasses(List<String> allClasses) {
+    public void retrieveClasses(final List<String> retrievedClasses) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
+                classes = retrievedClasses;
             }
         });
     }
@@ -573,7 +576,7 @@ public class MainFragment extends Fragment
 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getContext(), android.R.layout.simple_spinner_item, getClassList());
+                getContext(), android.R.layout.simple_spinner_item, classes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         return adapter;
     }

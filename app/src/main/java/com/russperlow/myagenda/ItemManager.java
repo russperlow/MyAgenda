@@ -43,13 +43,25 @@ public class ItemManager {
     private static DatabaseReference myClassTypesRef;
     private static DatabaseReference myItemTypesRef;
 
-    public static void initDatabaseRefs(final RetrieveItemsListener listener, final Activity activity){
+    public static void initDatabaseRefs(final RetrieveItemsListener itemsListener, final RetrieveClassesListener classesListener, final Activity activity){
         allUsersRef = reference.child(DATABASE_USERS);
         myUserRef = allUsersRef.child(DATABASE_MY_USER);
         myItemsRef = myUserRef.child(DATABASE_ITEMS);
         myClassTypesRef = myUserRef.child(DATABASE_CLASS_TYPES);
         myItemTypesRef = myUserRef.child(DATABASE_ITEM_TYPES);
 
+        initItemRef(itemsListener, activity);
+        initClassTypeRef(classesListener, activity);
+
+    }
+
+    /**
+     * Inits reference for the items in firebase
+     *
+     * @param listener For items
+     * @param activity For initializing items
+     */
+    private static void initItemRef(final RetrieveItemsListener listener, final Activity activity){
         // Listener for getting items from the database
         final RetrieveItemsListener _listener = new RetrieveItemsListener() {
             @Override
@@ -62,6 +74,7 @@ public class ItemManager {
             }
         };
 
+        // Agenda items listener
         myItemsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -73,9 +86,29 @@ public class ItemManager {
 
             }
         });
-
     }
 
+    private static void initClassTypeRef(final RetrieveClassesListener listener, final Activity activity){
+
+        final RetrieveClassesListener _listener = new RetrieveClassesListener() {
+            @Override
+            public void retrieveClasses(List<String> _allClasses) {
+                listener.retrieveClasses(_allClasses);
+            }
+        };
+
+        myClassTypesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                _listener.retrieveClasses(createClassesFromDatabase((List<Object>)dataSnapshot.getValue()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     public static void updateDatabase(List<Item> items){
         Map<String, Object> children = new HashMap<>();
@@ -143,6 +176,16 @@ public class ItemManager {
         }
 
         return databaseItems;
+    }
+
+    private static List<String> createClassesFromDatabase(List<Object> objects){
+        List<String> allClasses = new ArrayList<>();
+
+        for(Object object : objects){
+            allClasses.add(object.toString());
+        }
+
+        return allClasses;
     }
 
     private static SaveItemState convertItem(Item item){
