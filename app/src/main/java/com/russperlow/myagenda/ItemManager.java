@@ -51,7 +51,7 @@ public class ItemManager {
         myItemTypesRef = myUserRef.child(DATABASE_ITEM_TYPES);
 
         initItemRef(itemsListener, activity);
-        initClassTypeRef(classesListener, activity);
+        initClassTypeRef(classesListener);
 
     }
 
@@ -88,7 +88,12 @@ public class ItemManager {
         });
     }
 
-    private static void initClassTypeRef(final RetrieveClassesListener listener, final Activity activity){
+    /**
+     * Inits reference for the classes in firebase
+     *
+     * @param listener For classes
+     */
+    private static void initClassTypeRef(final RetrieveClassesListener listener){
 
         final RetrieveClassesListener _listener = new RetrieveClassesListener() {
             @Override
@@ -178,6 +183,13 @@ public class ItemManager {
         return databaseItems;
     }
 
+    /**
+     * Create classes from firebase
+     *
+     * @param objects Class names to parse
+     *
+     * @return Class names as list of strings
+     */
     private static List<String> createClassesFromDatabase(List<Object> objects){
         List<String> allClasses = new ArrayList<>();
 
