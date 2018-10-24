@@ -40,9 +40,11 @@ public class ItemManager {
         // Listener for getting items from the database
         final RetrieveItemsListner _listener = new RetrieveItemsListner() {
             @Override
-            public void retrieveItems(List<Item> allItems){
+            public void retrieveItems(List<Item> _allItems){
                 List<Item> copy = new ArrayList<>();
-                copy.addAll(allItems);
+                copy.addAll(_allItems);
+                allItems.clear();
+                allItems.addAll(_allItems);
                 listner.retrieveItems(copy);
             }
         };
@@ -50,7 +52,6 @@ public class ItemManager {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                allItems.addAll(createItemsFromDatabase((Map<String, Object>)dataSnapshot.getValue(), activity));
                 _listener.retrieveItems(createItemsFromDatabase((Map<String, Object>)dataSnapshot.getValue(), activity));
             }
 
