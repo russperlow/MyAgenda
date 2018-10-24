@@ -43,7 +43,8 @@ import java.util.Map;
 
 public class MainFragment extends Fragment
     implements  ItemManager.RetrieveItemsListener,
-                ItemManager.RetrieveClassesListener {
+                ItemManager.RetrieveClassesListener,
+                ItemManager.RetrieveItemTypesListener{
 
     public static MainFragment newInstance(){
         return new MainFragment();
@@ -119,6 +120,11 @@ public class MainFragment extends Fragment
      */
     List<String> classes = new ArrayList<>();
 
+    /**
+     * The types of items pulled from firebase
+     */
+    List<String> itemTypes = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -155,7 +161,7 @@ public class MainFragment extends Fragment
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
         // Init all references to the database (classes, item types, items)
-        ItemManager.initDatabaseRefs(this, this, getActivity());
+        ItemManager.initDatabaseRefs(this, this, this, getActivity());
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences((getContext()));
 
@@ -184,6 +190,7 @@ public class MainFragment extends Fragment
                 // Variables to store the user input that we will add to the list
                 final Spinner typeInput = (Spinner)addItemView.findViewById(R.id.new_item_type);
 //                typeInput.setAdapter(populateTypeSpinner(R.string.pref_key_item_names_count, R.string.pref_key_item_names_prefix, R.array.drop_down_array, false));
+                typeInput.setAdapter(populateTypeSpinner());
 
                 final EditText nameInput = (EditText)addItemView.findViewById(R.id.new_item_name);
                 final TextView dateTimeDisplay = (TextView)addItemView.findViewById(R.id.new_item_date_time_text);
@@ -302,6 +309,16 @@ public class MainFragment extends Fragment
             @Override
             public void run() {
                 classes = retrievedClasses;
+            }
+        });
+    }
+
+    @Override
+    public void retrieveItemTypes(final List<String> retrievedItemTypes) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                itemTypes = retrievedItemTypes;
             }
         });
     }
@@ -591,10 +608,10 @@ public class MainFragment extends Fragment
     /**
      * Populates the spinner, when adding a new item, with all the classes option
      */
-    protected SpinnerAdapter populateTypeSpinner(int countKey, int prefix, int defaultArray, boolean includeAll){
+    protected SpinnerAdapter populateTypeSpinner(){
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getContext(), android.R.layout.simple_spinner_item, getPrefArrayAsList(countKey, prefix, defaultArray, includeAll));
+                getContext(), android.R.layout.simple_spinner_item, itemTypes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         return adapter;
     }

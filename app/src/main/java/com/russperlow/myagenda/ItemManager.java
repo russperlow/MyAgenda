@@ -25,6 +25,10 @@ public class ItemManager {
         void retrieveClasses(List<String> allClasses);
     }
 
+    interface RetrieveItemTypesListener{
+        void retrieveItemTypes(List<String> allItemTypes);
+    }
+
     // Database URL strings
     private static final String DATABASE_ITEMS = "Items";
     private static final String DATABASE_CLASS_TYPES = "ClassTypes";
@@ -43,7 +47,7 @@ public class ItemManager {
     private static DatabaseReference myClassTypesRef;
     private static DatabaseReference myItemTypesRef;
 
-    public static void initDatabaseRefs(final RetrieveItemsListener itemsListener, final RetrieveClassesListener classesListener, final Activity activity){
+    public static void initDatabaseRefs(final RetrieveItemsListener itemsListener, final RetrieveClassesListener classesListener, final RetrieveItemTypesListener itemTypesListener, final Activity activity){
         allUsersRef = reference.child(DATABASE_USERS);
         myUserRef = allUsersRef.child(DATABASE_MY_USER);
         myItemsRef = myUserRef.child(DATABASE_ITEMS);
@@ -52,7 +56,7 @@ public class ItemManager {
 
         initItemRef(itemsListener, activity);
         initClassTypeRef(classesListener);
-
+        initItemTypeRef(itemTypesListener);
     }
 
     /**
@@ -62,7 +66,8 @@ public class ItemManager {
      * @param activity For initializing items
      */
     private static void initItemRef(final RetrieveItemsListener listener, final Activity activity){
-        // Listener for getting items from the database
+
+        // Listener to send items to MainFragment
         final RetrieveItemsListener _listener = new RetrieveItemsListener() {
             @Override
             public void retrieveItems(List<Item> _allItems){
@@ -74,7 +79,7 @@ public class ItemManager {
             }
         };
 
-        // Agenda items listener
+        // Listener for changes in database /Items/
         myItemsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -95,6 +100,7 @@ public class ItemManager {
      */
     private static void initClassTypeRef(final RetrieveClassesListener listener){
 
+        // Listener to send classTypes to MainFragment
         final RetrieveClassesListener _listener = new RetrieveClassesListener() {
             @Override
             public void retrieveClasses(List<String> _allClasses) {
@@ -102,10 +108,40 @@ public class ItemManager {
             }
         };
 
+        // Listener for changes in database /ClassTypes/
         myClassTypesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 _listener.retrieveClasses(createClassesFromDatabase((List<Object>)dataSnapshot.getValue()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /**
+     * Inits reference for the item types in firebase
+     *
+     * @param listener For item types
+     */
+    private static void initItemTypeRef(final RetrieveItemTypesListener listener){
+
+        // Listener to send itemTypes to MainFragment
+        final RetrieveItemTypesListener _listener = new RetrieveItemTypesListener() {
+            @Override
+            public void retrieveItemTypes(List<String> _allItemTypes) {
+                listener.retrieveItemTypes(_allItemTypes);
+            }
+        };
+
+        // Listener for changes in database /ItemTypes/
+        myItemTypesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                _listener.retrieveItemTypes(createItemTypesFromDatabase((List<Object>)dataSnapshot.getValue()));
             }
 
             @Override
@@ -198,6 +234,23 @@ public class ItemManager {
         }
 
         return allClasses;
+    }
+
+    /**
+     * Create classes from firebase
+     *
+     * @param objects Item type names to parse
+     *
+     * @return Item types as list of strings
+     */
+    private static List<String> createItemTypesFromDatabase(List<Object> objects){
+        List<String> allItemTypes = new ArrayList<>();
+
+        for(Object object : objects){
+            allItemTypes.add(object.toString());
+        }
+
+        return allItemTypes;
     }
 
     private static SaveItemState convertItem(Item item){
