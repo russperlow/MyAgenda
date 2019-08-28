@@ -72,6 +72,9 @@ public class ItemManager {
             @Override
             public void retrieveItems(List<Item> _allItems){
                 List<Item> copy = new ArrayList<>();
+
+                if(copy.size() <= 0){return;}
+
                 copy.addAll(_allItems);
                 allItems.clear();
                 allItems.addAll(_allItems);
@@ -184,6 +187,9 @@ public class ItemManager {
 
         // List for all items we pull from the database
         List<Item> databaseItems = new ArrayList<>();
+
+        if(databaseItems.size() <= 0)
+            return null;
 
         // Loop through the given objects and parse them over to items
         for(Object object : items){
